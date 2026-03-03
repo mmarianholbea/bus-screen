@@ -19,26 +19,46 @@ body{
   color:var(--black);
 }
 
+/* ===== TOP RED INDICATOR ===== */
+
+.direction-banner{
+  text-align:center;
+  color:var(--red);
+  padding:25px 0 10px 0;
+}
+
+.direction-text{
+  font-size:44px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.direction-arrow{
+  font-size:160px;   /* mare */
+  font-weight:900;
+  line-height:1;
+}
+
+/* ===== CONTENT ===== */
+
 .container{
-  padding:55px 90px 55px 70px; /* mai mult spațiu în dreapta pt săgeată */
+  padding:30px 90px 60px 70px;
 }
 
 .header{
   display:flex;
   justify-content:space-between;
   align-items:baseline;
-  gap:30px;
-  margin-bottom:28px;
+  margin-bottom:20px;
 }
 
 .title{
   font-size:58px;
   font-weight:900;
-  white-space:nowrap;
 }
 
 .clock{
-  font-size:78px;
+  font-size:80px;
   font-weight:900;
 }
 
@@ -51,7 +71,7 @@ thead th{
   text-align:left;
   font-size:32px;
   font-weight:800;
-  padding:0 0 14px 0;
+  padding-bottom:14px;
   border-bottom:5px solid var(--black);
 }
 
@@ -60,10 +80,10 @@ thead th:last-child{
 }
 
 tbody td{
-  padding:30px 0;
+  padding:28px 0;
   border-bottom:2px solid var(--gray);
-  vertical-align:middle;
   color:var(--red);
+  vertical-align:middle;
 }
 
 .line{
@@ -91,30 +111,15 @@ tbody td{
   color:var(--red);
   padding:30px 0;
 }
-
-/* SĂGEATA: fix pe dreapta, pe centru, NU ocupă header */
-.arrow-fixed{
-  position:fixed;
-  right:18px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:140px;
-  font-weight:900;
-  color:var(--black);
-  line-height:1;
-  opacity:0.95;
-  pointer-events:none;
-}
-
-/* mic “shadow” ca să fie vizibilă pe orice */
-.arrow-fixed::after{
-  content:"";
-}
 </style>
 </head>
 
 <body>
-<div class="arrow-fixed">→</div>
+
+<div class="direction-banner">
+  <div class="direction-text">BUS STOP ON THE RIGHT</div>
+  <div class="direction-arrow">→</div>
+</div>
 
 <div class="container">
   <div class="header">
@@ -164,7 +169,7 @@ function etaText(seconds){
 async function loadBuses(){
   const url = `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals?app_id=${APP_ID}&app_key=${APP_KEY}`;
   const res = await fetch(url, { cache: "no-store" });
-  if(!res.ok) throw new Error("TfL " + res.status);
+  if(!res.ok) throw new Error();
 
   const data = await res.json();
   data.sort((a,b)=>a.timeToStation-b.timeToStation);
@@ -177,7 +182,7 @@ async function loadBuses(){
     return;
   }
 
-  data.slice(0, MAX_ROWS).forEach(bus=>{
+  data.slice(0,MAX_ROWS).forEach(bus=>{
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="line">${bus.lineName}</td>
@@ -197,9 +202,10 @@ async function tick(){
 }
 
 updateClock();
-setInterval(updateClock, 1000);
+setInterval(updateClock,1000);
 tick();
-setInterval(tick, REFRESH_MS);
+setInterval(tick,REFRESH_MS);
 </script>
+
 </body>
 </html>
