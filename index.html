@@ -7,129 +7,157 @@
   <style>
     :root{
       --red:#d40000;
-      --text:#000;
-      --bg:#fff;
-      --grid:#e5e5e5;
     }
+
     body{
       margin:0;
       font-family: Arial, sans-serif;
-      background:var(--bg);
-      color:var(--text);
+      background:#fff;
+      color:#000;
     }
-    .wrap{ padding: 28px 48px; }
 
-    /* ONE SINGLE TOP LINE */
+    .wrap{
+      padding: 40px 60px 30px;
+    }
+
+    /* TOP LINE: Stop (left) | Hint (center) | Clock (right) */
     .topline{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:24px;
-      white-space:nowrap;
+      display:grid;
+      grid-template-columns: auto 1fr auto;
+      align-items:center;
+      column-gap: 20px;
     }
-    .leftgroup{
-      display:flex;
-      align-items:baseline;
-      gap:28px;
-      min-width:0;
-    }
+
     .stop{
       font-size:64px;
       font-weight:900;
-      letter-spacing:.2px;
-    }
-
-    /* bus stop on the right - same line */
-    .hint{
-      display:flex;
-      align-items:baseline;
-      gap:14px;
-      color:var(--red);
-      font-size:40px;
-      font-weight:900;
-      letter-spacing:1px;
-      text-transform:uppercase;
-    }
-    .arrow{
-      display:inline-block;
-      font-size:56px;
-      line-height:1;
-      transform: translateY(6px);
-      animation: nudge 1s ease-in-out infinite;
-    }
-    @keyframes nudge{
-      0%,100%{ transform: translate(0,6px); }
-      50%{ transform: translate(18px,6px); }
+      white-space:nowrap;
     }
 
     .clock{
       font-size:72px;
       font-weight:900;
-      letter-spacing:1px;
-    }
-
-    /* TABLE */
-    table{
-      margin-top:18px;
-      width:100%;
-      border-collapse:collapse;
-    }
-    thead th{
-      text-align:left;
-      font-size:34px;
-      font-weight:900;
-      padding: 18px 0 14px 0;
-      border-bottom:4px solid #000;
-    }
-    thead th:last-child{ text-align:right; }
-    tbody td{
-      padding: 34px 0;
-      border-bottom:2px solid var(--grid);
-      vertical-align:middle;
-    }
-    .line{
-      width:170px;
-      color:var(--red);
-      font-size:88px;
-      font-weight:900;
-    }
-    .dest{
-      color:var(--red);
-      font-size:72px;
-      font-weight:900;
-    }
-    .eta{
-      color:var(--red);
-      font-size:78px;
-      font-weight:900;
       text-align:right;
       white-space:nowrap;
     }
 
-    .error{
-      margin-top:14px;
+    .centerhint{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
       color:var(--red);
-      font-size:28px;
-      font-weight:800;
-      display:none;
+      font-weight:900;
+      text-align:center;
+      transform: translateY(6px); /* mică coborâre ca să stea “între” stop și ceas */
+    }
+
+    .hint-text{
+      font-size:40px;
+      letter-spacing:1px;
+      white-space:nowrap;
+    }
+
+    .hint-arrow{
+      font-size:90px;
+      line-height:0.85;
+      margin-top:-6px;
+      animation: nudge 1s ease-in-out infinite;
+    }
+
+    @keyframes nudge{
+      0%,100%{ transform: translateX(0); }
+      50%{ transform: translateX(22px); }
+    }
+
+    /* TABLE */
+    .table{
+      margin-top: 22px;
+      width:100%;
+      border-collapse:collapse;
+    }
+
+    .table th{
+      text-align:left;
+      font-size:34px;
+      padding: 18px 0 14px;
+      border-bottom: 4px solid #000;
+    }
+
+    .table th:last-child{ text-align:right; }
+
+    .table td{
+      padding: 38px 0;
+      border-bottom: 1px solid #e3e3e3;
+      vertical-align:middle;
+    }
+
+    .line{
+      font-size:86px;
+      font-weight:900;
+      width: 220px;
+      color:var(--red);
+      white-space:nowrap;
+    }
+
+    .dest{
+      font-size:78px;
+      font-weight:900;
+      color:var(--red);
+      white-space:nowrap;
+    }
+
+    .eta{
+      font-size:86px;
+      font-weight:900;
+      text-align:right;
+      color:var(--red);
+      white-space:nowrap;
+      width: 260px;
+    }
+
+    .muted{
+      opacity:.7;
+      font-size:26px;
+    }
+
+    .error{
+      margin-top: 16px;
+      font-size: 28px;
+      color: var(--red);
+      font-weight: 800;
+    }
+
+    /* Make it nice on very wide TVs */
+    @media (min-width: 1800px){
+      .wrap{ padding: 45px 80px 35px; }
+      .stop{ font-size:72px; }
+      .clock{ font-size:84px; }
+      .hint-text{ font-size:44px; }
+      .hint-arrow{ font-size:100px; }
+      .table th{ font-size:38px; }
+      .line{ font-size:96px; width:260px; }
+      .dest{ font-size:86px; }
+      .eta{ font-size:96px; width:300px; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="topline">
-      <div class="leftgroup">
-        <div class="stop">Stop R • Stratford</div>
-        <div class="hint">
-          BUS STOP ON THE RIGHT <span class="arrow">→</span>
-        </div>
+      <div class="stop">Stop R • Stratford</div>
+
+      <div class="centerhint" aria-label="Bus stop direction">
+        <div class="hint-text">BUS STOP ON THE RIGHT</div>
+        <div class="hint-arrow">→</div>
       </div>
+
       <div id="clock" class="clock">--:--</div>
     </div>
 
-    <div id="err" class="error"></div>
+    <div id="err" class="error" style="display:none;"></div>
 
-    <table>
+    <table class="table">
       <thead>
         <tr>
           <th>Line</th>
@@ -138,17 +166,19 @@
         </tr>
       </thead>
       <tbody id="rows">
-        <tr><td colspan="3">Loading…</td></tr>
+        <tr><td colspan="3" class="muted">Loading…</td></tr>
       </tbody>
     </table>
   </div>
 
   <script>
+    // === CONFIG ===
     const STOPPOINT_ID = "490009140S";
-    const REFRESH_MS = 5000; // 5 seconds
-    const MAX_ROWS = 10;
+    const REFRESH_MS   = 5000;   // 5 seconds
+    const MAX_ROWS     = 12;
 
-    const APP_ID = "mmarianholbea";
+    // IMPORTANT: you exposed your key in chat earlier. Consider regenerating it later.
+    const APP_ID  = "mmarianholbea";
     const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
 
     function setClock(){
@@ -163,6 +193,7 @@
       el.style.display = "block";
       el.textContent = msg;
     }
+
     function clearError(){
       const el = document.getElementById("err");
       el.style.display = "none";
@@ -170,24 +201,28 @@
     }
 
     async function loadArrivals(){
-      const url = `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals?app_id=${encodeURIComponent(APP_ID)}&app_key=${encodeURIComponent(APP_KEY)}`;
+      const url =
+        `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals` +
+        `?app_id=${encodeURIComponent(APP_ID)}&app_key=${encodeURIComponent(APP_KEY)}`;
+
       const res = await fetch(url, { cache: "no-store" });
       if(!res.ok) throw new Error(`TfL API error ${res.status}`);
-      const data = await res.json();
 
+      let data = await res.json();
       data.sort((a,b) => a.timeToStation - b.timeToStation);
 
       const tbody = document.getElementById("rows");
       tbody.innerHTML = "";
 
       if(!data.length){
-        tbody.innerHTML = `<tr><td colspan="3">No live arrivals right now</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
         return;
       }
 
-      data.slice(0, MAX_ROWS).forEach(x=>{
+      data.slice(0, MAX_ROWS).forEach(x => {
         const mins = Math.max(0, Math.round(x.timeToStation / 60));
         const etaText = mins === 0 ? "Due" : `${mins} min`;
+
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="line">${x.lineName}</td>
