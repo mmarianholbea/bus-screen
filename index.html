@@ -12,93 +12,88 @@
   --gray:#e6e6e6;
 }
 
-body{
+html,body{
   margin:0;
-  font-family: Arial, Helvetica, sans-serif;
+  padding:0;
+  width:100%;
+  height:100%;
   background:#fff;
+  font-family: Arial, Helvetica, sans-serif;
   color:var(--black);
 }
 
-.wrap{
-  padding:28px 50px 24px;
+.safe{
+  padding:50px 100px 40px;
+  box-sizing:border-box;
+  height:100%;
 }
 
-/* HEADER */
+/* HEADER PERFECT ALIGN */
 .header{
-  display:flex;
-  align-items:flex-start;
-  position:relative;
+  display:grid;
+  grid-template-columns: auto 1fr auto;
+  align-items:center;  /* THIS fixes vertical alignment */
 }
 
 .stop{
-  font-size:68px;
+  font-size:60px;
   font-weight:900;
   white-space:nowrap;
 }
 
-.clock{
-  font-size:78px;
-  font-weight:900;
-  white-space:nowrap;
-  margin-left:auto;
-}
-
-/* CENTER */
 .center{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  text-align:center;
 }
 
 .centertext{
-  font-size:68px;
+  font-size:60px;
   font-weight:900;
   color:var(--red);
-  line-height:1;
 }
 
-/* BIG CUSTOM ARROW */
-.arrow-wrapper{
-  margin-top:8px;
+.arrow{
+  margin-top:10px;
   animation:nudge 1s ease-in-out infinite;
 }
 
-.arrow-svg{
-  width:220px;     /* MUCH BIGGER */
-  height:80px;
+.arrow svg{
+  width:240px;
+  height:90px;
 }
 
-.arrow-line{
+.arrow line{
   stroke:var(--red);
-  stroke-width:18; /* THICK */
+  stroke-width:20;
   stroke-linecap:round;
 }
 
-.arrow-head{
+.arrow polygon{
   fill:var(--red);
 }
 
 @keyframes nudge{
   0%,100%{ transform: translateX(0); }
-  50%{ transform: translateX(28px); }
+  50%{ transform: translateX(30px); }
 }
 
-/* TABLE */
+.clock{
+  font-size:70px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:18px;
+  margin-top:30px;
 }
 
 thead th{
-  text-align:left;
-  font-size:34px;
+  font-size:28px;
   font-weight:900;
-  padding:16px 0 12px;
+  padding:10px 0 12px;
   border-bottom:4px solid #000;
+  text-align:left;
 }
 
 thead th:last-child{
@@ -106,51 +101,47 @@ thead th:last-child{
 }
 
 tbody td{
-  padding:34px 0;
+  padding:28px 0;
   border-bottom:2px solid var(--gray);
-  vertical-align:middle;
 }
 
 .line{
-  color:var(--red);
-  font-size:86px;
+  font-size:80px;
   font-weight:900;
-  width:220px;
+  color:var(--red);
+  width:200px;
 }
 
 .dest{
-  color:var(--red);
-  font-size:72px;
+  font-size:68px;
   font-weight:900;
+  color:var(--red);
 }
 
 .eta{
-  color:var(--red);
-  font-size:86px;
+  font-size:80px;
   font-weight:900;
+  color:var(--red);
   text-align:right;
-  white-space:nowrap;
-  width:260px;
+  width:240px;
 }
 </style>
 </head>
 
 <body>
-<div class="wrap">
+<div class="safe">
 
   <div class="header">
     <div class="stop">Stop R • Stratford</div>
 
     <div class="center">
       <div class="centertext">BUS STOP</div>
-
-      <div class="arrow-wrapper">
-        <svg class="arrow-svg" viewBox="0 0 300 100">
-          <line x1="10" y1="50" x2="200" y2="50" class="arrow-line"/>
-          <polygon points="200,20 290,50 200,80" class="arrow-head"/>
+      <div class="arrow">
+        <svg viewBox="0 0 300 100">
+          <line x1="10" y1="50" x2="200" y2="50"/>
+          <polygon points="200,15 290,50 200,85"/>
         </svg>
       </div>
-
     </div>
 
     <div id="clock" class="clock">--:--</div>
@@ -175,7 +166,6 @@ tbody td{
 const STOPPOINT_ID = "490009140S";
 const APP_ID = "mmarianholbea";
 const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
-const REFRESH_MS = 5000;
 
 function setClock(){
   const d = new Date();
@@ -186,17 +176,16 @@ function setClock(){
 
 async function loadArrivals(){
   const url =
-    `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals` +
-    `?app_id=${APP_ID}&app_key=${APP_KEY}`;
+    `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals?app_id=${APP_ID}&app_key=${APP_KEY}`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(url);
   const data = await res.json();
   data.sort((a,b)=>a.timeToStation-b.timeToStation);
 
   const tbody = document.getElementById("rows");
   tbody.innerHTML = "";
 
-  data.slice(0,10).forEach(bus=>{
+  data.slice(0,8).forEach(bus=>{
     const mins = Math.max(0, Math.round(bus.timeToStation/60));
     const etaText = mins===0 ? "Due" : `${mins} min`;
 
@@ -213,7 +202,7 @@ async function loadArrivals(){
 setClock();
 setInterval(setClock,1000);
 loadArrivals();
-setInterval(loadArrivals,REFRESH_MS);
+setInterval(loadArrivals,5000);
 </script>
 
 </body>
