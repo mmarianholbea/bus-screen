@@ -20,77 +20,75 @@ body{
 }
 
 .wrap{
-  padding:28px 50px 24px;
+  padding:40px 60px 30px;
 }
 
-/* ===== HEADER: 3 COLUMNS (NO OVERLAP) ===== */
-.header{
+/* ===== TOP LINE ===== */
+
+.topline{
   display:grid;
-  grid-template-columns: auto 1fr auto; /* left | center | right */
-  align-items:center;
-  column-gap:24px;
+  grid-template-columns:auto 1fr auto;
+  align-items:start;
+  margin-bottom:20px;
 }
 
 .stop{
   font-size:68px;
   font-weight:900;
   white-space:nowrap;
-  line-height:1;
 }
 
-.center{
+/* CENTER BLOCK */
+.centerblock{
+  justify-self:center;
+  text-align:center;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  min-width:0;                /* allows shrinking */
 }
 
 .centertext{
+  font-size:68px;
   font-weight:900;
   color:var(--red);
   line-height:1;
-  white-space:nowrap;
-  text-align:center;
-  font-size:68px;             /* same “feel” as Stop */
-  max-width:100%;
-  overflow:hidden;
-  text-overflow:ellipsis;      /* never overlaps; it shortens if needed */
 }
 
+/* BIG THICK ARROW */
 .bigarrow{
-  margin-top:6px;
-  color:var(--red);
+  margin-top:12px;
+  font-size:120px;          /* MUCH BIGGER */
   font-weight:900;
+  color:var(--red);
   line-height:1;
-  font-size:120px;             /* big + thick look */
   animation:nudge 1s ease-in-out infinite;
 }
 
+/* Animation */
 @keyframes nudge{
   0%,100%{ transform: translateX(0); }
-  50%{ transform: translateX(28px); }
+  50%{ transform: translateX(25px); }
 }
 
 .clock{
   font-size:78px;
   font-weight:900;
+  text-align:right;
   white-space:nowrap;
-  line-height:1;
 }
 
 /* ===== TABLE ===== */
+
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:18px;
 }
 
 thead th{
   text-align:left;
   font-size:34px;
   font-weight:900;
-  padding:16px 0 12px;
+  padding:18px 0 14px;
   border-bottom:4px solid #000;
 }
 
@@ -139,29 +137,23 @@ tbody td{
   display:none;
   margin-top:10px;
 }
-
-/* Optional: reduce header sizes on smaller screens */
-@media (max-width:1200px){
-  .stop{ font-size:56px; }
-  .centertext{ font-size:56px; }
-  .clock{ font-size:64px; }
-  .bigarrow{ font-size:96px; }
-}
 </style>
 </head>
 
 <body>
 <div class="wrap">
 
-  <div class="header">
+  <div class="topline">
+
     <div class="stop">Stop R • Stratford</div>
 
-    <div class="center">
+    <div class="centerblock">
       <div class="centertext">BUS STOP ON THE RIGHT</div>
       <div class="bigarrow">→</div>
     </div>
 
     <div id="clock" class="clock">--:--</div>
+
   </div>
 
   <div id="err" class="error">Can’t load live bus times.</div>
@@ -196,8 +188,13 @@ function setClock(){
   document.getElementById("clock").textContent = `${hh}:${mm}`;
 }
 
-function showError(){ document.getElementById("err").style.display = "block"; }
-function hideError(){ document.getElementById("err").style.display = "none"; }
+function showError(){
+  document.getElementById("err").style.display = "block";
+}
+
+function hideError(){
+  document.getElementById("err").style.display = "none";
+}
 
 async function loadArrivals(){
   const url =
@@ -214,7 +211,8 @@ async function loadArrivals(){
   tbody.innerHTML = "";
 
   if(!data.length){
-    tbody.innerHTML = `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
+    tbody.innerHTML =
+      `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
     return;
   }
 
@@ -233,8 +231,12 @@ async function loadArrivals(){
 }
 
 async function tick(){
-  try{ hideError(); await loadArrivals(); }
-  catch{ showError(); }
+  try{
+    hideError();
+    await loadArrivals();
+  }catch{
+    showError();
+  }
 }
 
 setClock();
@@ -243,5 +245,6 @@ setInterval(setClock,1000);
 tick();
 setInterval(tick,REFRESH_MS);
 </script>
+
 </body>
 </html>
