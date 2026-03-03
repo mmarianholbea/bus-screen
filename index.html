@@ -6,191 +6,208 @@
 <title>Bus Times</title>
 
 <style>
-  :root{
-    --red:#d10000;
-    --black:#000;
-    --gray:#d9d9d9;
-  }
+:root{
+  --red:#d10000;
+  --black:#000;
+  --gray:#d9d9d9;
+}
 
-  body{
-    margin:0;
-    font-family: Arial, Helvetica, sans-serif;
-    background:#fff;
-    color:var(--black);
-  }
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:#fff;
+  color:var(--black);
+}
 
-  .container{
-    padding:70px 80px;
-  }
+.container{
+  padding:70px 80px;
+}
 
-  .header{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    gap:30px;
-  }
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+}
 
-  .title{
-    font-size:62px;
-    font-weight:900;
-    letter-spacing:0.2px;
-  }
+.left-header{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
 
-  .clock{
-    font-size:72px;         /* ceas mai mare */
-    font-weight:900;
-  }
+.title{
+  font-size:60px;
+  font-weight:900;
+}
 
-  .table-wrap{
-    margin-top:55px;
-  }
+.clock{
+  font-size:70px;
+  font-weight:900;
+}
 
-  table{
-    width:100%;
-    border-collapse:collapse;
-  }
+.arrow-box{
+  text-align:right;
+}
 
-  thead th{
-    text-align:left;
-    font-size:34px;
-    font-weight:800;
-    padding:0 0 18px 0;
-    border-bottom:5px solid var(--black);
-  }
+.arrow-label{
+  font-size:34px;
+  font-weight:800;
+  margin-bottom:5px;
+}
 
-  thead th:last-child{
-    text-align:right;
-  }
+.arrow{
+  font-size:150px;   /* săgeată mare */
+  font-weight:900;
+  line-height:1;
+}
 
-  tbody td{
-    padding:34px 0;
-    border-bottom:2px solid var(--gray);
-    vertical-align:middle;
-    color:var(--red);       /* tot rândul roșu */
-  }
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:50px;
+}
 
-  /* Col 1: Line */
-  .line{
-    font-size:84px;
-    font-weight:900;
-    width:220px;
-    letter-spacing:0.3px;
-  }
+thead th{
+  text-align:left;
+  font-size:34px;
+  font-weight:800;
+  padding-bottom:18px;
+  border-bottom:5px solid var(--black);
+}
 
-  /* Col 2: Destination */
-  .destination{
-    font-size:64px;
-    font-weight:800;
-  }
+thead th:last-child{
+  text-align:right;
+}
 
-  /* Col 3: ETA */
-  .eta{
-    font-size:64px;
-    font-weight:900;
-    text-align:right;
-    width:260px;
-    white-space:nowrap;     /* nu rupe "2 min" pe 2 rânduri */
-  }
+tbody td{
+  padding:32px 0;
+  border-bottom:2px solid var(--gray);
+  color:var(--red);
+}
 
-  /* Pentru mesajele temporare */
-  .status{
-    font-size:46px;
-    font-weight:800;
-    color:var(--red);
-    padding:40px 0;
-  }
+.line{
+  font-size:80px;
+  font-weight:900;
+  width:200px;
+}
+
+.destination{
+  font-size:60px;
+  font-weight:800;
+}
+
+.eta{
+  font-size:60px;
+  font-weight:900;
+  text-align:right;
+  white-space:nowrap;
+  width:220px;
+}
+
+.status{
+  font-size:46px;
+  font-weight:800;
+  color:var(--red);
+  padding:40px 0;
+}
 </style>
 </head>
 
 <body>
 <div class="container">
+
   <div class="header">
-    <div class="title">Stop R • Stratford</div>
-    <div id="clock" class="clock">--:--</div>
+    <div class="left-header">
+      <div class="title">Stop R • Stratford</div>
+      <div id="clock" class="clock">--:--</div>
+    </div>
+
+    <div class="arrow-box">
+      <div class="arrow-label">Buses</div>
+      <div class="arrow">→</div>
+    </div>
   </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Line</th>
-          <th>Destination</th>
-          <th>ETA</th>
-        </tr>
-      </thead>
-      <tbody id="rows">
-        <tr><td class="status" colspan="3">Loading…</td></tr>
-      </tbody>
-    </table>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Line</th>
+        <th>Destination</th>
+        <th>ETA</th>
+      </tr>
+    </thead>
+    <tbody id="rows">
+      <tr><td class="status" colspan="3">Loading…</td></tr>
+    </tbody>
+  </table>
+
 </div>
 
 <script>
-  const STOPPOINT_ID = "490009140S";
-  const APP_ID = "mmarianholbea";
-  const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
+const STOPPOINT_ID = "490009140S";
+const APP_ID = "mmarianholbea";
+const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
+const REFRESH_MS = 5000;
+const MAX_ROWS = 8;
 
-  const REFRESH_MS = 5000;
-  const MAX_ROWS = 8;
+function updateClock(){
+  const d = new Date();
+  const h = String(d.getHours()).padStart(2,'0');
+  const m = String(d.getMinutes()).padStart(2,'0');
+  document.getElementById("clock").textContent = h + ":" + m;
+}
 
-  function updateClock(){
-    const d = new Date();
-    const h = String(d.getHours()).padStart(2,'0');
-    const m = String(d.getMinutes()).padStart(2,'0');
-    document.getElementById("clock").textContent = `${h}:${m}`;
+function setStatus(text){
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = `<tr><td class="status" colspan="3">${text}</td></tr>`;
+}
+
+function etaText(seconds){
+  const mins = Math.max(0, Math.round(seconds / 60));
+  return mins === 0 ? "Due" : mins + " min";
+}
+
+async function loadBuses(){
+  const url = `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals?app_id=${APP_ID}&app_key=${APP_KEY}`;
+
+  const res = await fetch(url, { cache: "no-store" });
+  if(!res.ok) throw new Error();
+
+  const data = await res.json();
+  data.sort((a,b)=>a.timeToStation-b.timeToStation);
+
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
+
+  if(!data.length){
+    setStatus("No arrivals");
+    return;
   }
 
-  function setStatus(text){
-    const tbody = document.getElementById("rows");
-    tbody.innerHTML = `<tr><td class="status" colspan="3">${text}</td></tr>`;
+  data.slice(0,MAX_ROWS).forEach(bus=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="line">${bus.lineName}</td>
+      <td class="destination">${bus.destinationName || ""}</td>
+      <td class="eta">${etaText(bus.timeToStation)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function tick(){
+  try{
+    await loadBuses();
+  }catch{
+    setStatus("Can’t load bus times");
   }
+}
 
-  function etaText(seconds){
-    const mins = Math.max(0, Math.round(seconds / 60));
-    return mins === 0 ? "Due" : `${mins} min`;
-  }
-
-  async function loadBuses(){
-    const url = `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals?app_id=${APP_ID}&app_key=${APP_KEY}`;
-
-    const res = await fetch(url, { cache: "no-store" });
-    if(!res.ok) throw new Error("TfL error " + res.status);
-
-    const data = await res.json();
-    data.sort((a,b)=>a.timeToStation-b.timeToStation);
-
-    const tbody = document.getElementById("rows");
-    tbody.innerHTML = "";
-
-    if(!data.length){
-      setStatus("No arrivals");
-      return;
-    }
-
-    data.slice(0, MAX_ROWS).forEach(bus=>{
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="line">${bus.lineName}</td>
-        <td class="destination">${bus.destinationName || ""}</td>
-        <td class="eta">${etaText(bus.timeToStation)}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }
-
-  async function tick(){
-    try{
-      await loadBuses();
-    }catch(e){
-      setStatus("Can’t load bus times");
-    }
-  }
-
-  updateClock();
-  setInterval(updateClock, 1000);
-
-  tick();
-  setInterval(tick, REFRESH_MS);
+updateClock();
+setInterval(updateClock,1000);
+tick();
+setInterval(tick,REFRESH_MS);
 </script>
+
 </body>
 </html>
