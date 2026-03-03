@@ -20,65 +20,73 @@ body{
 }
 
 .wrap{
-  padding:40px 60px 30px;
+  padding:34px 60px 28px;
 }
 
-/* ===== TOP LINE ===== */
-
-.topline{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:start;
-  margin-bottom:20px;
+/* ===== ONE-LINE HEADER (FORCED) ===== */
+.header{
+  position:relative;
+  display:flex;
+  align-items:center;          /* SAME LINE */
+  justify-content:space-between;
+  gap:20px;
+  padding-bottom:18px;         /* space before table header */
 }
 
+/* Left + Right fixed blocks */
 .stop{
   font-size:68px;
   font-weight:900;
   white-space:nowrap;
-}
-
-/* CENTER BLOCK */
-.centerblock{
-  justify-self:center;
-  text-align:center;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-.centertext{
-  font-size:68px;
-  font-weight:900;
-  color:var(--red);
   line-height:1;
-}
-
-/* BIG THICK ARROW */
-.bigarrow{
-  margin-top:12px;
-  font-size:120px;          /* MUCH BIGGER */
-  font-weight:900;
-  color:var(--red);
-  line-height:1;
-  animation:nudge 1s ease-in-out infinite;
-}
-
-/* Animation */
-@keyframes nudge{
-  0%,100%{ transform: translateX(0); }
-  50%{ transform: translateX(25px); }
 }
 
 .clock{
   font-size:78px;
   font-weight:900;
-  text-align:right;
   white-space:nowrap;
+  line-height:1;
+}
+
+/* Center block is ABSOLUTE so it never pushes left/right */
+.centerblock{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  top:0;
+  width:min(1100px, 58vw);     /* fits between Stop and Clock */
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  pointer-events:none;
+}
+
+/* Text auto-fits using clamp */
+.centertext{
+  font-weight:900;
+  color:var(--red);
+  line-height:1;
+  white-space:nowrap;
+  font-size:clamp(34px, 4.2vw, 68px);
+}
+
+/* BIG THICK ARROW */
+.bigarrow{
+  margin-top:10px;
+  color:var(--red);
+  line-height:1;
+  font-weight:900;
+  font-size:clamp(64px, 6.5vw, 120px);
+  animation:nudge 1s ease-in-out infinite;
+}
+
+@keyframes nudge{
+  0%,100%{ transform: translateX(0); }
+  50%{ transform: translateX(26px); }
 }
 
 /* ===== TABLE ===== */
-
 table{
   width:100%;
   border-collapse:collapse;
@@ -143,8 +151,7 @@ tbody td{
 <body>
 <div class="wrap">
 
-  <div class="topline">
-
+  <div class="header">
     <div class="stop">Stop R • Stratford</div>
 
     <div class="centerblock">
@@ -153,7 +160,6 @@ tbody td{
     </div>
 
     <div id="clock" class="clock">--:--</div>
-
   </div>
 
   <div id="err" class="error">Can’t load live bus times.</div>
@@ -188,13 +194,8 @@ function setClock(){
   document.getElementById("clock").textContent = `${hh}:${mm}`;
 }
 
-function showError(){
-  document.getElementById("err").style.display = "block";
-}
-
-function hideError(){
-  document.getElementById("err").style.display = "none";
-}
+function showError(){ document.getElementById("err").style.display = "block"; }
+function hideError(){ document.getElementById("err").style.display = "none"; }
 
 async function loadArrivals(){
   const url =
@@ -211,8 +212,7 @@ async function loadArrivals(){
   tbody.innerHTML = "";
 
   if(!data.length){
-    tbody.innerHTML =
-      `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
     return;
   }
 
@@ -231,12 +231,8 @@ async function loadArrivals(){
 }
 
 async function tick(){
-  try{
-    hideError();
-    await loadArrivals();
-  }catch{
-    showError();
-  }
+  try{ hideError(); await loadArrivals(); }
+  catch{ showError(); }
 }
 
 setClock();
@@ -245,6 +241,5 @@ setInterval(setClock,1000);
 tick();
 setInterval(tick,REFRESH_MS);
 </script>
-
 </body>
 </html>
