@@ -5,20 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Next Buses</title>
   <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#0b0b0b; color:#fff; }
-    .wrap { padding: 40px; }
-    .top { display:flex; align-items:baseline; justify-content:space-between; gap:20px; }
-    .title { font-size: 34px; opacity:.95; }
-    .clock { font-size: 28px; opacity:.75; }
-    .sub { margin-top: 10px; font-size: 22px; opacity:.75; }
-    .table { margin-top: 26px; width:100%; border-collapse: collapse; }
-    .table th, .table td { padding: 14px 10px; border-bottom: 1px solid rgba(255,255,255,.10); }
-    .table th { text-align:left; font-size: 18px; opacity:.7; font-weight: 600; }
-    .line { font-size: 26px; font-weight: 800; width: 90px; }
-    .dest { font-size: 22px; opacity:.95; }
-    .eta { font-size: 26px; font-weight: 800; text-align:right; width: 140px; }
-    .muted { opacity:.65; }
-    .error { margin-top: 18px; font-size: 20px; color:#ffb3b3; }
+    body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #ffffff;
+  color: #000000;
+}
+
+.wrap {
+  padding: 60px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.title {
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.clock {
+  font-size: 40px;
+  font-weight: 600;
+}
+
+.table {
+  margin-top: 60px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  font-size: 28px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #000;
+}
+
+.table td {
+  padding: 30px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.line {
+  font-size: 60px;
+  font-weight: 800;
+  width: 150px;
+}
+
+.dest {
+  font-size: 48px;
+  font-weight: 500;
+}
+
+.eta {
+  font-size: 60px;
+  font-weight: 800;
+  text-align: right;
+}
   </style>
 </head>
 <body>
