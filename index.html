@@ -23,11 +23,11 @@ body{
   padding:28px 50px 24px;
 }
 
-/* ===== SINGLE LINE HEADER ===== */
+/* HEADER */
 .header{
-  display:grid;
-  grid-template-columns:auto 1fr auto;
-  align-items:center; /* same vertical line */
+  display:flex;
+  align-items:flex-start;
+  position:relative;
 }
 
 .stop{
@@ -36,44 +36,61 @@ body{
   white-space:nowrap;
 }
 
-.center{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:18px;
+.clock{
+  font-size:78px;
+  font-weight:900;
   white-space:nowrap;
+  margin-left:auto;
+}
+
+/* CENTER */
+.center{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
 .centertext{
   font-size:68px;
   font-weight:900;
   color:var(--red);
+  line-height:1;
 }
 
-.bigarrow{
-  font-size:90px;
-  font-weight:900;
-  color:var(--red);
+/* BIG CUSTOM ARROW */
+.arrow-wrapper{
+  margin-top:8px;
   animation:nudge 1s ease-in-out infinite;
-  line-height:1;
+}
+
+.arrow-svg{
+  width:220px;     /* MUCH BIGGER */
+  height:80px;
+}
+
+.arrow-line{
+  stroke:var(--red);
+  stroke-width:18; /* THICK */
+  stroke-linecap:round;
+}
+
+.arrow-head{
+  fill:var(--red);
 }
 
 @keyframes nudge{
   0%,100%{ transform: translateX(0); }
-  50%{ transform: translateX(20px); }
+  50%{ transform: translateX(28px); }
 }
 
-.clock{
-  font-size:78px;
-  font-weight:900;
-  white-space:nowrap;
-}
-
-/* ===== TABLE ===== */
+/* TABLE */
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:20px;
+  margin-top:18px;
 }
 
 thead th{
@@ -115,20 +132,6 @@ tbody td{
   white-space:nowrap;
   width:260px;
 }
-
-.muted{
-  font-size:34px;
-  color:#666;
-  padding:24px 0;
-}
-
-.error{
-  font-size:34px;
-  color:var(--red);
-  font-weight:900;
-  display:none;
-  margin-top:10px;
-}
 </style>
 </head>
 
@@ -140,13 +143,18 @@ tbody td{
 
     <div class="center">
       <div class="centertext">BUS STOP</div>
-      <div class="bigarrow">→</div>
+
+      <div class="arrow-wrapper">
+        <svg class="arrow-svg" viewBox="0 0 300 100">
+          <line x1="10" y1="50" x2="200" y2="50" class="arrow-line"/>
+          <polygon points="200,20 290,50 200,80" class="arrow-head"/>
+        </svg>
+      </div>
+
     </div>
 
     <div id="clock" class="clock">--:--</div>
   </div>
-
-  <div id="err" class="error">Can’t load live bus times.</div>
 
   <table>
     <thead>
@@ -157,7 +165,7 @@ tbody td{
       </tr>
     </thead>
     <tbody id="rows">
-      <tr><td colspan="3" class="muted">Loading…</td></tr>
+      <tr><td colspan="3">Loading…</td></tr>
     </tbody>
   </table>
 
@@ -167,9 +175,7 @@ tbody td{
 const STOPPOINT_ID = "490009140S";
 const APP_ID = "mmarianholbea";
 const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
-
 const REFRESH_MS = 5000;
-const MAX_ROWS = 10;
 
 function setClock(){
   const d = new Date();
@@ -178,53 +184,36 @@ function setClock(){
   document.getElementById("clock").textContent = `${hh}:${mm}`;
 }
 
-function showError(){ document.getElementById("err").style.display = "block"; }
-function hideError(){ document.getElementById("err").style.display = "none"; }
-
 async function loadArrivals(){
   const url =
     `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals` +
     `?app_id=${APP_ID}&app_key=${APP_KEY}`;
 
   const res = await fetch(url, { cache: "no-store" });
-  if(!res.ok) throw new Error();
-
   const data = await res.json();
   data.sort((a,b)=>a.timeToStation-b.timeToStation);
 
   const tbody = document.getElementById("rows");
   tbody.innerHTML = "";
 
-  if(!data.length){
-    tbody.innerHTML =
-      `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
-    return;
-  }
-
-  data.slice(0,MAX_ROWS).forEach(bus=>{
+  data.slice(0,10).forEach(bus=>{
     const mins = Math.max(0, Math.round(bus.timeToStation/60));
     const etaText = mins===0 ? "Due" : `${mins} min`;
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="line">${bus.lineName}</td>
-      <td class="dest">${bus.destinationName || ""}</td>
+      <td class="dest">${bus.destinationName}</td>
       <td class="eta">${etaText}</td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-async function tick(){
-  try{ hideError(); await loadArrivals(); }
-  catch{ showError(); }
-}
-
 setClock();
 setInterval(setClock,1000);
-
-tick();
-setInterval(tick,REFRESH_MS);
+loadArrivals();
+setInterval(loadArrivals,REFRESH_MS);
 </script>
 
 </body>
