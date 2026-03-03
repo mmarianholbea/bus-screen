@@ -70,7 +70,7 @@
     }
 
     async function loadArrivals() {
-      const url = `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals?app_key=2ed7f93cc9bf4afeba5a399e39497c78`;
+     const url = `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals?subscription-key=2ed7f93cc9bf4afeba5a399e39497c78`;
       const res = await fetch(url, { cache: "no-store" });
       if (!res.ok) throw new Error(`TfL API error ${res.status}`);
       let data = await res.json();
