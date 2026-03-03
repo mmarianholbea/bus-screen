@@ -23,44 +23,48 @@ html,body{
 }
 
 .safe{
-  padding:50px 100px 40px;
+  padding:40px 90px 30px; /* less vertical padding */
   box-sizing:border-box;
   height:100%;
 }
 
-/* ===== HEADER ===== */
+/* ===== HEADER LINE 1 ===== */
 
 .header-top{
   display:grid;
   grid-template-columns:auto 1fr auto;
-  align-items:center; /* perfect alignment */
+  align-items:center;
 }
 
 .stop{
-  font-size:60px;
+  font-size:58px;
   font-weight:900;
-  white-space:nowrap;
 }
 
 .centertext{
-  font-size:60px;
+  font-size:58px;
   font-weight:900;
   color:var(--red);
   text-align:center;
 }
 
 .clock{
-  font-size:70px;
+  font-size:68px;
   font-weight:900;
-  white-space:nowrap;
   text-align:right;
 }
 
-/* ARROW ROW */
+/* ===== ARROW CENTERED PERFECTLY ===== */
+
 .header-bottom{
-  display:flex;
-  justify-content:center;
-  margin-top:10px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  margin-top:2px; /* very tight */
+}
+
+.header-bottom div{
+  grid-column:2; /* middle column */
+  justify-self:center;
 }
 
 .arrow{
@@ -68,13 +72,13 @@ html,body{
 }
 
 .arrow svg{
-  width:240px;
-  height:90px;
+  width:260px;
+  height:80px;
 }
 
 .arrow line{
   stroke:var(--red);
-  stroke-width:20;
+  stroke-width:22;
   stroke-linecap:round;
 }
 
@@ -84,7 +88,7 @@ html,body{
 
 @keyframes nudge{
   0%,100%{ transform: translateX(0); }
-  50%{ transform: translateX(30px); }
+  50%{ transform: translateX(28px); }
 }
 
 /* ===== TABLE ===== */
@@ -92,13 +96,13 @@ html,body{
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:30px;
+  margin-top:15px; /* lifted up */
 }
 
 thead th{
-  font-size:28px;
+  font-size:26px;
   font-weight:900;
-  padding:10px 0 12px;
+  padding:6px 0 8px; /* tighter */
   border-bottom:4px solid #000;
   text-align:left;
 }
@@ -108,29 +112,29 @@ thead th:last-child{
 }
 
 tbody td{
-  padding:28px 0;
+  padding:22px 0; /* reduced spacing */
   border-bottom:2px solid var(--gray);
 }
 
 .line{
-  font-size:80px;
+  font-size:78px;
   font-weight:900;
   color:var(--red);
-  width:200px;
+  width:180px;
 }
 
 .dest{
-  font-size:68px;
+  font-size:66px;
   font-weight:900;
   color:var(--red);
 }
 
 .eta{
-  font-size:80px;
+  font-size:78px;
   font-weight:900;
   color:var(--red);
   text-align:right;
-  width:240px;
+  width:220px;
 }
 </style>
 </head>
@@ -138,14 +142,12 @@ tbody td{
 <body>
 <div class="safe">
 
-  <!-- HEADER LINE 1 -->
   <div class="header-top">
     <div class="stop">Stop R • Stratford</div>
     <div class="centertext">BUS STOP</div>
     <div id="clock" class="clock">--:--</div>
   </div>
 
-  <!-- HEADER LINE 2 (arrow only) -->
   <div class="header-bottom">
     <div class="arrow">
       <svg viewBox="0 0 300 100">
@@ -193,7 +195,7 @@ async function loadArrivals(){
   const tbody = document.getElementById("rows");
   tbody.innerHTML = "";
 
-  data.slice(0,8).forEach(bus=>{
+  data.slice(0,10).forEach(bus=>{  /* more rows now */
     const mins = Math.max(0, Math.round(bus.timeToStation/60));
     const etaText = mins===0 ? "Due" : `${mins} min`;
 
