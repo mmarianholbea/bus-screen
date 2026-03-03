@@ -1,222 +1,217 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Bus Times</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Next Buses</title>
+  <style>
+    :root{
+      --red:#d40000;
+      --text:#000;
+      --bg:#fff;
+      --grid:#e5e5e5;
+    }
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{ padding: 28px 48px; }
 
-<style>
-:root{
-  --red:#d10000;
-  --black:#000;
-  --gray:#dcdcdc;
-}
+    /* ONE SINGLE TOP LINE */
+    .topline{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:24px;
+      white-space:nowrap;
+    }
+    .leftgroup{
+      display:flex;
+      align-items:baseline;
+      gap:28px;
+      min-width:0;
+    }
+    .stop{
+      font-size:64px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
 
-body{
-  margin:0;
-  font-family: Arial, Helvetica, sans-serif;
-  background:#fff;
-  color:var(--black);
-}
+    /* bus stop on the right - same line */
+    .hint{
+      display:flex;
+      align-items:baseline;
+      gap:14px;
+      color:var(--red);
+      font-size:40px;
+      font-weight:900;
+      letter-spacing:1px;
+      text-transform:uppercase;
+    }
+    .arrow{
+      display:inline-block;
+      font-size:56px;
+      line-height:1;
+      transform: translateY(6px);
+      animation: nudge 1s ease-in-out infinite;
+    }
+    @keyframes nudge{
+      0%,100%{ transform: translate(0,6px); }
+      50%{ transform: translate(18px,6px); }
+    }
 
-.container{
-  padding:60px 90px 60px 80px;
-}
+    .clock{
+      font-size:72px;
+      font-weight:900;
+      letter-spacing:1px;
+    }
 
-/* ===== HEADER ===== */
-.header{
-  display:grid;
-  grid-template-columns: 1fr auto;
-  align-items:start;
-}
+    /* TABLE */
+    table{
+      margin-top:18px;
+      width:100%;
+      border-collapse:collapse;
+    }
+    thead th{
+      text-align:left;
+      font-size:34px;
+      font-weight:900;
+      padding: 18px 0 14px 0;
+      border-bottom:4px solid #000;
+    }
+    thead th:last-child{ text-align:right; }
+    tbody td{
+      padding: 34px 0;
+      border-bottom:2px solid var(--grid);
+      vertical-align:middle;
+    }
+    .line{
+      width:170px;
+      color:var(--red);
+      font-size:88px;
+      font-weight:900;
+    }
+    .dest{
+      color:var(--red);
+      font-size:72px;
+      font-weight:900;
+    }
+    .eta{
+      color:var(--red);
+      font-size:78px;
+      font-weight:900;
+      text-align:right;
+      white-space:nowrap;
+    }
 
-.title{
-  font-size:64px;
-  font-weight:900;
-}
-
-.clock{
-  font-size:100px;
-  font-weight:900;
-}
-
-/* ===== BANNER ===== */
-.banner{
-  grid-column: 1 / -1;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  margin:10px 0 20px 0;
-  color:var(--red);
-  font-weight:900;
-}
-
-.banner-text{
-  font-size:46px;
-  letter-spacing:2px;
-  text-align:center;
-}
-
-.banner-arrow{
-  font-size:160px;
-  line-height:0.8;
-  margin-top:-10px;
-  animation: arrowMove 1.2s ease-in-out infinite;
-}
-
-@keyframes arrowMove{
-  0%   { transform: translateX(0); }
-  50%  { transform: translateX(30px); }
-  100% { transform: translateX(0); }
-}
-
-/* ===== TABLE ===== */
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-thead th{
-  text-align:left;
-  font-size:34px;
-  font-weight:800;
-  padding-bottom:15px;
-  border-bottom:5px solid var(--black);
-}
-
-thead th:last-child{
-  text-align:right;
-}
-
-tbody td{
-  padding:30px 0;
-  border-bottom:2px solid var(--gray);
-  color:var(--red);
-  vertical-align:middle;
-}
-
-.line{
-  font-size:90px;
-  font-weight:900;
-  width:230px;
-}
-
-.destination{
-  font-size:70px;
-  font-weight:800;
-}
-
-.eta{
-  font-size:70px;
-  font-weight:900;
-  text-align:right;
-  white-space:nowrap;
-  width:260px;
-}
-
-.status{
-  font-size:48px;
-  font-weight:800;
-  color:var(--red);
-  padding:40px 0;
-}
-</style>
+    .error{
+      margin-top:14px;
+      color:var(--red);
+      font-size:28px;
+      font-weight:800;
+      display:none;
+    }
+  </style>
 </head>
-
 <body>
-<div class="container">
-
-  <div class="header">
-    <div class="title">Stop R • Stratford</div>
-    <div id="clock" class="clock">--:--</div>
-
-    <div class="banner">
-      <div class="banner-text">BUS STOP ON THE RIGHT</div>
-      <div class="banner-arrow">→</div>
+  <div class="wrap">
+    <div class="topline">
+      <div class="leftgroup">
+        <div class="stop">Stop R • Stratford</div>
+        <div class="hint">
+          BUS STOP ON THE RIGHT <span class="arrow">→</span>
+        </div>
+      </div>
+      <div id="clock" class="clock">--:--</div>
     </div>
+
+    <div id="err" class="error"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Line</th>
+          <th>Destination</th>
+          <th>ETA</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr><td colspan="3">Loading…</td></tr>
+      </tbody>
+    </table>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Line</th>
-        <th>Destination</th>
-        <th>ETA</th>
-      </tr>
-    </thead>
-    <tbody id="rows">
-      <tr><td class="status" colspan="3">Loading…</td></tr>
-    </tbody>
-  </table>
+  <script>
+    const STOPPOINT_ID = "490009140S";
+    const REFRESH_MS = 5000; // 5 seconds
+    const MAX_ROWS = 10;
 
-</div>
+    const APP_ID = "mmarianholbea";
+    const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
 
-<script>
-const STOPPOINT_ID = "490009140S";
-const APP_ID = "mmarianholbea";
-const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
+    function setClock(){
+      const d = new Date();
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      document.getElementById("clock").textContent = `${hh}:${mm}`;
+    }
 
-const REFRESH_MS = 5000;
-const MAX_ROWS = 10;
+    function showError(msg){
+      const el = document.getElementById("err");
+      el.style.display = "block";
+      el.textContent = msg;
+    }
+    function clearError(){
+      const el = document.getElementById("err");
+      el.style.display = "none";
+      el.textContent = "";
+    }
 
-function updateClock(){
-  const d = new Date();
-  const h = String(d.getHours()).padStart(2,'0');
-  const m = String(d.getMinutes()).padStart(2,'0');
-  document.getElementById("clock").textContent = `${h}:${m}`;
-}
+    async function loadArrivals(){
+      const url = `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals?app_id=${encodeURIComponent(APP_ID)}&app_key=${encodeURIComponent(APP_KEY)}`;
+      const res = await fetch(url, { cache: "no-store" });
+      if(!res.ok) throw new Error(`TfL API error ${res.status}`);
+      const data = await res.json();
 
-function setStatus(text){
-  document.getElementById("rows").innerHTML =
-    `<tr><td class="status" colspan="3">${text}</td></tr>`;
-}
+      data.sort((a,b) => a.timeToStation - b.timeToStation);
 
-function etaText(seconds){
-  const mins = Math.max(0, Math.round(seconds / 60));
-  return mins === 0 ? "Due" : `${mins} min`;
-}
+      const tbody = document.getElementById("rows");
+      tbody.innerHTML = "";
 
-async function loadBuses(){
-  const url = `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals?app_id=${APP_ID}&app_key=${APP_KEY}`;
-  const res = await fetch(url, { cache: "no-store" });
-  if(!res.ok) throw new Error();
+      if(!data.length){
+        tbody.innerHTML = `<tr><td colspan="3">No live arrivals right now</td></tr>`;
+        return;
+      }
 
-  const data = await res.json();
-  data.sort((a,b)=>a.timeToStation-b.timeToStation);
+      data.slice(0, MAX_ROWS).forEach(x=>{
+        const mins = Math.max(0, Math.round(x.timeToStation / 60));
+        const etaText = mins === 0 ? "Due" : `${mins} min`;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="line">${x.lineName}</td>
+          <td class="dest">${x.destinationName || ""}</td>
+          <td class="eta">${etaText}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-  const tbody = document.getElementById("rows");
-  tbody.innerHTML = "";
+    async function tick(){
+      try{
+        clearError();
+        await loadArrivals();
+      }catch(e){
+        showError("Can’t load live bus times.");
+      }
+    }
 
-  if(!data.length){
-    setStatus("No arrivals");
-    return;
-  }
+    setClock();
+    setInterval(setClock, 10000);
 
-  data.slice(0,MAX_ROWS).forEach(bus=>{
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td class="line">${bus.lineName}</td>
-      <td class="destination">${bus.destinationName || ""}</td>
-      <td class="eta">${etaText(bus.timeToStation)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-async function tick(){
-  try{
-    await loadBuses();
-  }catch{
-    setStatus("Can’t load bus times");
-  }
-}
-
-updateClock();
-setInterval(updateClock,1000);
-tick();
-setInterval(tick,REFRESH_MS);
-</script>
-
+    tick();
+    setInterval(tick, REFRESH_MS);
+  </script>
 </body>
 </html>
