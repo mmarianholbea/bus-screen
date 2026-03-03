@@ -23,61 +23,57 @@ body{
   padding:28px 50px 24px;
 }
 
-/* ===== HEADER ===== */
+/* ===== SINGLE LINE HEADER ===== */
 .header{
   display:grid;
   grid-template-columns:auto 1fr auto;
-  align-items:center;
-  column-gap:24px;
+  align-items:center; /* same vertical line */
 }
 
 .stop{
   font-size:68px;
   font-weight:900;
   white-space:nowrap;
-  line-height:1;
 }
 
 .center{
   display:flex;
-  flex-direction:column;
-  align-items:center;
   justify-content:center;
+  align-items:center;
+  gap:18px;
+  white-space:nowrap;
 }
 
 .centertext{
   font-size:68px;
   font-weight:900;
   color:var(--red);
-  line-height:1;
 }
 
 .bigarrow{
-  margin-top:6px;
-  font-size:120px;
+  font-size:90px;
   font-weight:900;
   color:var(--red);
-  line-height:1;
   animation:nudge 1s ease-in-out infinite;
+  line-height:1;
 }
 
 @keyframes nudge{
   0%,100%{ transform: translateX(0); }
-  50%{ transform: translateX(28px); }
+  50%{ transform: translateX(20px); }
 }
 
 .clock{
   font-size:78px;
   font-weight:900;
   white-space:nowrap;
-  line-height:1;
 }
 
 /* ===== TABLE ===== */
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:18px;
+  margin-top:20px;
 }
 
 thead th{
