@@ -7,62 +7,57 @@
   <style>
     :root{
       --red:#d40000;
+      --black:#000;
+      --gray:#e6e6e6;
     }
 
     body{
       margin:0;
-      font-family: Arial, sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background:#fff;
-      color:#000;
+      color:var(--black);
     }
 
     .wrap{
-      padding: 40px 60px 30px;
+      padding:42px 60px 40px;
     }
 
-    /* TOP LINE: Stop (left) | Hint (center) | Clock (right) */
+    /* TOP LINE: Stop | Center message | Clock (ALL on same line) */
     .topline{
       display:grid;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns:auto 1fr auto;
       align-items:center;
-      column-gap: 20px;
+      column-gap:28px;
+      margin-bottom:22px; /* keeps space tight */
     }
 
     .stop{
-      font-size:64px;
+      font-size:68px;
       font-weight:900;
       white-space:nowrap;
-    }
-
-    .clock{
-      font-size:72px;
-      font-weight:900;
-      text-align:right;
-      white-space:nowrap;
+      line-height:1;
     }
 
     .centerhint{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      color:var(--red);
-      font-weight:900;
+      justify-self:center;
       text-align:center;
-      transform: translateY(6px); /* mică coborâre ca să stea “între” stop și ceas */
-    }
-
-    .hint-text{
-      font-size:40px;
-      letter-spacing:1px;
       white-space:nowrap;
+      font-size:40px;
+      font-weight:900;
+      color:var(--red);
+      letter-spacing:1px;
+      line-height:1;
+      display:flex;
+      align-items:center;
+      gap:16px;
     }
 
-    .hint-arrow{
-      font-size:90px;
-      line-height:0.85;
-      margin-top:-6px;
-      animation: nudge 1s ease-in-out infinite;
+    .arrow{
+      display:inline-block;
+      font-size:56px;
+      line-height:1;
+      transform-origin:center;
+      animation:nudge 1s ease-in-out infinite;
     }
 
     @keyframes nudge{
@@ -70,94 +65,108 @@
       50%{ transform: translateX(22px); }
     }
 
+    .clock{
+      font-size:78px;
+      font-weight:900;
+      text-align:right;
+      white-space:nowrap;
+      line-height:1;
+    }
+
     /* TABLE */
-    .table{
-      margin-top: 22px;
+    table{
       width:100%;
       border-collapse:collapse;
     }
 
-    .table th{
+    thead th{
       text-align:left;
       font-size:34px;
-      padding: 18px 0 14px;
-      border-bottom: 4px solid #000;
+      font-weight:900;
+      padding:18px 0 14px;
+      border-bottom:4px solid #000;
     }
+    thead th:last-child{ text-align:right; }
 
-    .table th:last-child{ text-align:right; }
-
-    .table td{
-      padding: 38px 0;
-      border-bottom: 1px solid #e3e3e3;
+    tbody td{
+      padding:34px 0;
+      border-bottom:2px solid var(--gray);
       vertical-align:middle;
     }
 
     .line{
+      color:var(--red);
       font-size:86px;
       font-weight:900;
-      width: 220px;
-      color:var(--red);
+      width:210px;
       white-space:nowrap;
     }
 
     .dest{
-      font-size:78px;
-      font-weight:900;
       color:var(--red);
+      font-size:72px;
+      font-weight:900;
       white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      padding-right:24px;
     }
 
     .eta{
+      color:var(--red);
       font-size:86px;
       font-weight:900;
       text-align:right;
-      color:var(--red);
       white-space:nowrap;
-      width: 260px;
+      width:260px;
     }
 
     .muted{
-      opacity:.7;
-      font-size:26px;
+      color:#666;
+      font-size:34px;
+      font-weight:700;
+      padding:24px 0;
     }
 
     .error{
-      margin-top: 16px;
-      font-size: 28px;
-      color: var(--red);
-      font-weight: 800;
+      color:var(--red);
+      font-size:34px;
+      font-weight:900;
+      margin:12px 0 0;
+      display:none;
     }
 
-    /* Make it nice on very wide TVs */
-    @media (min-width: 1800px){
-      .wrap{ padding: 45px 80px 35px; }
-      .stop{ font-size:72px; }
-      .clock{ font-size:84px; }
-      .hint-text{ font-size:44px; }
-      .hint-arrow{ font-size:100px; }
-      .table th{ font-size:38px; }
-      .line{ font-size:96px; width:260px; }
-      .dest{ font-size:86px; }
-      .eta{ font-size:96px; width:300px; }
+    /* Optional: fit more rows on smaller screens */
+    @media (max-width: 1100px){
+      .wrap{ padding:28px 28px 24px; }
+      .stop{ font-size:54px; }
+      .centerhint{ font-size:30px; }
+      .arrow{ font-size:44px; }
+      .clock{ font-size:62px; }
+      thead th{ font-size:26px; }
+      .line{ font-size:64px; width:170px; }
+      .dest{ font-size:54px; }
+      .eta{ font-size:64px; width:200px; }
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="topline">
       <div class="stop">Stop R • Stratford</div>
 
-      <div class="centerhint" aria-label="Bus stop direction">
-        <div class="hint-text">BUS STOP ON THE RIGHT</div>
-        <div class="hint-arrow">→</div>
+      <div class="centerhint">
+        <span>BUS STOP ON THE RIGHT</span>
+        <span class="arrow">→</span>
       </div>
 
       <div id="clock" class="clock">--:--</div>
     </div>
 
-    <div id="err" class="error" style="display:none;"></div>
+    <div id="err" class="error">Can’t load live bus times.</div>
 
-    <table class="table">
+    <table>
       <thead>
         <tr>
           <th>Line</th>
@@ -172,34 +181,31 @@
   </div>
 
   <script>
-    // === CONFIG ===
+    // ===== CONFIG =====
     const STOPPOINT_ID = "490009140S";
-    const REFRESH_MS   = 5000;   // 5 seconds
-    const MAX_ROWS     = 12;
-
-    // IMPORTANT: you exposed your key in chat earlier. Consider regenerating it later.
-    const APP_ID  = "mmarianholbea";
+    const APP_ID = "mmarianholbea";
     const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
 
+    const REFRESH_MS = 5000;     // 5 seconds
+    const MAX_ROWS = 10;
+
+    // ===== CLOCK =====
     function setClock(){
       const d = new Date();
-      const hh = String(d.getHours()).padStart(2,'0');
-      const mm = String(d.getMinutes()).padStart(2,'0');
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mm = String(d.getMinutes()).padStart(2,"0");
       document.getElementById("clock").textContent = `${hh}:${mm}`;
     }
 
-    function showError(msg){
-      const el = document.getElementById("err");
-      el.style.display = "block";
-      el.textContent = msg;
+    // ===== UI HELPERS =====
+    function showError(){
+      document.getElementById("err").style.display = "block";
+    }
+    function hideError(){
+      document.getElementById("err").style.display = "none";
     }
 
-    function clearError(){
-      const el = document.getElementById("err");
-      el.style.display = "none";
-      el.textContent = "";
-    }
-
+    // ===== DATA =====
     async function loadArrivals(){
       const url =
         `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals` +
@@ -207,8 +213,8 @@
 
       const res = await fetch(url, { cache: "no-store" });
       if(!res.ok) throw new Error(`TfL API error ${res.status}`);
+      const data = await res.json();
 
-      let data = await res.json();
       data.sort((a,b) => a.timeToStation - b.timeToStation);
 
       const tbody = document.getElementById("rows");
@@ -225,7 +231,7 @@
 
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td class="line">${x.lineName}</td>
+          <td class="line">${x.lineName || ""}</td>
           <td class="dest">${x.destinationName || ""}</td>
           <td class="eta">${etaText}</td>
         `;
@@ -235,16 +241,16 @@
 
     async function tick(){
       try{
-        clearError();
+        hideError();
         await loadArrivals();
       }catch(e){
-        showError("Can’t load live bus times.");
+        showError();
       }
     }
 
+    // Start
     setClock();
-    setInterval(setClock, 10000);
-
+    setInterval(setClock, 1000);
     tick();
     setInterval(tick, REFRESH_MS);
   </script>
