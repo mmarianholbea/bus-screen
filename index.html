@@ -19,37 +19,22 @@ body{
   color:var(--black);
 }
 
-/* ===== TOP RED INDICATOR ===== */
-
-.direction-banner{
-  text-align:center;
-  color:var(--red);
-  padding:25px 0 10px 0;
-}
-
-.direction-text{
-  font-size:44px;
-  font-weight:900;
-  letter-spacing:1px;
-}
-
-.direction-arrow{
-  font-size:160px;   /* mare */
-  font-weight:900;
-  line-height:1;
-}
-
-/* ===== CONTENT ===== */
-
 .container{
-  padding:30px 90px 60px 70px;
+  padding:60px 80px 60px 70px;
 }
+
+/* ===== HEADER ===== */
 
 .header{
   display:flex;
   justify-content:space-between;
-  align-items:baseline;
-  margin-bottom:20px;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.left{
+  display:flex;
+  flex-direction:column;
 }
 
 .title{
@@ -57,14 +42,34 @@ body{
   font-weight:900;
 }
 
+.direction{
+  color:var(--red);
+  margin-top:10px;
+}
+
+.direction-text{
+  font-size:40px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.direction-arrow{
+  font-size:200px;   /* MAI MARE */
+  font-weight:900;
+  line-height:0.8;
+}
+
 .clock{
-  font-size:80px;
+  font-size:85px;
   font-weight:900;
 }
+
+/* ===== TABLE ===== */
 
 table{
   width:100%;
   border-collapse:collapse;
+  margin-top:20px;
 }
 
 thead th{
@@ -116,14 +121,18 @@ tbody td{
 
 <body>
 
-<div class="direction-banner">
-  <div class="direction-text">BUS STOP ON THE RIGHT</div>
-  <div class="direction-arrow">→</div>
-</div>
-
 <div class="container">
+
   <div class="header">
-    <div class="title">Stop R • Stratford</div>
+    <div class="left">
+      <div class="title">Stop R • Stratford</div>
+
+      <div class="direction">
+        <div class="direction-text">BUS STOP ON THE RIGHT</div>
+        <div class="direction-arrow">→</div>
+      </div>
+    </div>
+
     <div id="clock" class="clock">--:--</div>
   </div>
 
@@ -139,6 +148,7 @@ tbody td{
       <tr><td class="status" colspan="3">Loading…</td></tr>
     </tbody>
   </table>
+
 </div>
 
 <script>
