@@ -1,164 +1,149 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Next Buses</title>
-  <style>
-    body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #ffffff;
-  color: #000000;
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Bus Times</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:#ffffff;
+  color:#000000;
 }
 
-.wrap {
-  padding: 60px;
+.container{
+  padding:80px;
 }
 
-.top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
 }
 
-.title {
-  font-size: 48px;
-  font-weight: 700;
+.title{
+  font-size:60px;
+  font-weight:900;
 }
 
-.clock {
-  font-size: 40px;
-  font-weight: 600;
+.clock{
+  font-size:50px;
+  font-weight:700;
 }
 
-.table {
-  margin-top: 60px;
-  width: 100%;
-  border-collapse: collapse;
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:80px;
 }
 
-.table th {
-  text-align: left;
-  font-size: 28px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid #000;
+th{
+  text-align:left;
+  font-size:36px;
+  padding-bottom:25px;
+  border-bottom:4px solid #000;
 }
 
-.table td {
-  padding: 30px 0;
-  border-bottom: 1px solid #ddd;
+td{
+  padding:40px 0;
+  border-bottom:2px solid #ddd;
+  vertical-align:middle;
 }
 
-.line {
-  font-size: 60px;
-  font-weight: 800;
-  width: 150px;
+.line{
+  font-size:80px;
+  font-weight:900;
+  width:180px;
 }
 
-.dest {
-  font-size: 48px;
-  font-weight: 500;
+.destination{
+  font-size:60px;
+  font-weight:600;
 }
 
-.eta {
-  font-size: 60px;
-  font-weight: 800;
-  text-align: right;
+.eta{
+  font-size:80px;
+  font-weight:900;
+  text-align:right;
+  width:220px;
 }
-  </style>
+</style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div class="title">Leytonstone High Road / Thatched House (Stop R)</div>
-      <div id="clock" class="clock">--:--</div>
-    </div>
-    <div class="sub muted">Live arrivals • refresh every 15s</div>
 
-    <div id="err" class="error" style="display:none;"></div>
-
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Line</th>
-          <th>Destination</th>
-          <th style="text-align:right;">ETA</th>
-        </tr>
-      </thead>
-      <tbody id="rows">
-        <tr><td colspan="3" class="muted">Loading…</td></tr>
-      </tbody>
-    </table>
+<div class="container">
+  <div class="header">
+    <div class="title">Stop R • Stratford</div>
+    <div id="clock" class="clock">--:--</div>
   </div>
 
-  <script>
-    const STOPPOINT_ID = "490009140S";
-    const REFRESH_MS = 15000;
-    const MAX_ROWS = 10;
+  <table>
+    <thead>
+      <tr>
+        <th>Line</th>
+        <th>Destination</th>
+        <th style="text-align:right;">ETA</th>
+      </tr>
+    </thead>
+    <tbody id="rows">
+      <tr><td colspan="3">Loading...</td></tr>
+    </tbody>
+  </table>
+</div>
 
-    function setClock() {
-      const d = new Date();
-      const hh = String(d.getHours()).padStart(2,'0');
-      const mm = String(d.getMinutes()).padStart(2,'0');
-      document.getElementById("clock").textContent = `${hh}:${mm}`;
-    }
+<script>
+const STOPPOINT_ID = "490009140S";
+const APP_ID = "mmarianholbea";
+const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
+const REFRESH_MS = 5000;
 
-    function showError(msg) {
-      const el = document.getElementById("err");
-      el.style.display = "block";
-      el.textContent = msg;
-    }
+function updateClock(){
+  const d = new Date();
+  const h = String(d.getHours()).padStart(2,'0');
+  const m = String(d.getMinutes()).padStart(2,'0');
+  document.getElementById("clock").textContent = h + ":" + m;
+}
 
-    function clearError() {
-      const el = document.getElementById("err");
-      el.style.display = "none";
-      el.textContent = "";
-    }
+async function loadBuses(){
+  const url =
+    `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals?app_id=${APP_ID}&app_key=${APP_KEY}`;
 
-    async function loadArrivals() {
-     const url = `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals?app_id=mmarianholbea&app_key=2ed7f93cc9bf4afeba5a399e39497c78`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error(`TfL API error ${res.status}`);
-      let data = await res.json();
+  const res = await fetch(url);
+  const data = await res.json();
 
-      data.sort((a,b) => a.timeToStation - b.timeToStation);
+  data.sort((a,b)=>a.timeToStation-b.timeToStation);
 
-      const tbody = document.getElementById("rows");
-      tbody.innerHTML = "";
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
 
-      if (!data.length) {
-        tbody.innerHTML = `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
-        return;
-      }
+  if(data.length===0){
+    tbody.innerHTML = `<tr><td colspan="3">No arrivals</td></tr>`;
+    return;
+  }
 
-      data.slice(0, MAX_ROWS).forEach(x => {
-        const mins = Math.max(0, Math.round(x.timeToStation / 60));
-        const etaText = mins === 0 ? "Due" : `${mins} min`;
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="line">${x.lineName}</td>
-          <td class="dest">${x.destinationName || ""}</td>
-          <td class="eta">${etaText}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+  data.slice(0,8).forEach(bus=>{
+    const mins = Math.max(0,Math.round(bus.timeToStation/60));
+    const eta = mins===0 ? "Due" : mins+" min";
 
-    async function tick() {
-      try {
-        clearError();
-        await loadArrivals();
-      } catch (e) {
-        showError("Can’t load live bus times.");
-      }
-    }
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td class="line">${bus.lineName}</td>
+      <td class="destination">${bus.destinationName}</td>
+      <td class="eta">${eta}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
 
-    setClock();
-    setInterval(setClock, 10000);
+updateClock();
+setInterval(updateClock,1000);
 
-    tick();
-    setInterval(tick, REFRESH_MS);
-  </script>
+loadBuses();
+setInterval(loadBuses,REFRESH_MS);
+</script>
+
 </body>
 </html>
