@@ -1,258 +1,236 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Next Buses</title>
-  <style>
-    :root{
-      --red:#d40000;
-      --black:#000;
-      --gray:#e6e6e6;
-    }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Bus Times</title>
 
-    body{
-      margin:0;
-      font-family: Arial, Helvetica, sans-serif;
-      background:#fff;
-      color:var(--black);
-    }
+<style>
+:root{
+  --red:#d40000;
+  --black:#000;
+  --gray:#e6e6e6;
+}
 
-    .wrap{
-      padding:42px 60px 40px;
-    }
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  background:#fff;
+  color:var(--black);
+}
 
-    /* TOP LINE: Stop | Center message | Clock (ALL on same line) */
-    .topline{
-      display:grid;
-      grid-template-columns:auto 1fr auto;
-      align-items:center;
-      column-gap:28px;
-      margin-bottom:22px; /* keeps space tight */
-    }
+.wrap{
+  padding:40px 60px 30px;
+}
 
-    .stop{
-      font-size:68px;
-      font-weight:900;
-      white-space:nowrap;
-      line-height:1;
-    }
+/* ===== TOP LINE ===== */
+.topline{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  margin-bottom:20px;
+}
 
-    .centerhint{
-      justify-self:center;
-      text-align:center;
-      white-space:nowrap;
-      font-size:40px;
-      font-weight:900;
-      color:var(--red);
-      letter-spacing:1px;
-      line-height:1;
-      display:flex;
-      align-items:center;
-      gap:16px;
-    }
+.stop{
+  font-size:68px;
+  font-weight:900;
+  white-space:nowrap;
+}
 
-    .arrow{
-      display:inline-block;
-      font-size:56px;
-      line-height:1;
-      transform-origin:center;
-      animation:nudge 1s ease-in-out infinite;
-    }
+.centerhint{
+  justify-self:center;
+  font-size:68px;              /* SAME SIZE as Stop R */
+  font-weight:900;
+  color:var(--red);
+  display:flex;
+  align-items:center;
+  gap:18px;
+  white-space:nowrap;
+}
 
-    @keyframes nudge{
-      0%,100%{ transform: translateX(0); }
-      50%{ transform: translateX(22px); }
-    }
+.arrow{
+  font-size:68px;              /* SAME SIZE as text */
+  animation:nudge 1s ease-in-out infinite;
+}
 
-    .clock{
-      font-size:78px;
-      font-weight:900;
-      text-align:right;
-      white-space:nowrap;
-      line-height:1;
-    }
+@keyframes nudge{
+  0%,100%{ transform: translateX(0); }
+  50%{ transform: translateX(20px); }
+}
 
-    /* TABLE */
-    table{
-      width:100%;
-      border-collapse:collapse;
-    }
+.clock{
+  font-size:78px;
+  font-weight:900;
+  text-align:right;
+  white-space:nowrap;
+}
 
-    thead th{
-      text-align:left;
-      font-size:34px;
-      font-weight:900;
-      padding:18px 0 14px;
-      border-bottom:4px solid #000;
-    }
-    thead th:last-child{ text-align:right; }
+/* ===== TABLE ===== */
 
-    tbody td{
-      padding:34px 0;
-      border-bottom:2px solid var(--gray);
-      vertical-align:middle;
-    }
+table{
+  width:100%;
+  border-collapse:collapse;
+}
 
-    .line{
-      color:var(--red);
-      font-size:86px;
-      font-weight:900;
-      width:210px;
-      white-space:nowrap;
-    }
+thead th{
+  text-align:left;
+  font-size:34px;
+  font-weight:900;
+  padding:18px 0 14px;
+  border-bottom:4px solid #000;
+}
 
-    .dest{
-      color:var(--red);
-      font-size:72px;
-      font-weight:900;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      padding-right:24px;
-    }
+thead th:last-child{
+  text-align:right;
+}
 
-    .eta{
-      color:var(--red);
-      font-size:86px;
-      font-weight:900;
-      text-align:right;
-      white-space:nowrap;
-      width:260px;
-    }
+tbody td{
+  padding:34px 0;
+  border-bottom:2px solid var(--gray);
+  vertical-align:middle;
+}
 
-    .muted{
-      color:#666;
-      font-size:34px;
-      font-weight:700;
-      padding:24px 0;
-    }
+.line{
+  color:var(--red);
+  font-size:86px;
+  font-weight:900;
+  width:220px;
+}
 
-    .error{
-      color:var(--red);
-      font-size:34px;
-      font-weight:900;
-      margin:12px 0 0;
-      display:none;
-    }
+.dest{
+  color:var(--red);
+  font-size:72px;
+  font-weight:900;
+}
 
-    /* Optional: fit more rows on smaller screens */
-    @media (max-width: 1100px){
-      .wrap{ padding:28px 28px 24px; }
-      .stop{ font-size:54px; }
-      .centerhint{ font-size:30px; }
-      .arrow{ font-size:44px; }
-      .clock{ font-size:62px; }
-      thead th{ font-size:26px; }
-      .line{ font-size:64px; width:170px; }
-      .dest{ font-size:54px; }
-      .eta{ font-size:64px; width:200px; }
-    }
-  </style>
+.eta{
+  color:var(--red);
+  font-size:86px;
+  font-weight:900;
+  text-align:right;
+  white-space:nowrap;
+  width:260px;
+}
+
+.muted{
+  font-size:34px;
+  color:#666;
+  padding:24px 0;
+}
+
+.error{
+  font-size:34px;
+  color:var(--red);
+  font-weight:900;
+  display:none;
+  margin-top:10px;
+}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="topline">
-      <div class="stop">Stop R • Stratford</div>
+<div class="wrap">
 
-      <div class="centerhint">
-        <span>BUS STOP ON THE RIGHT</span>
-        <span class="arrow">→</span>
-      </div>
+  <div class="topline">
+    <div class="stop">Stop R • Stratford</div>
 
-      <div id="clock" class="clock">--:--</div>
+    <div class="centerhint">
+      BUS STOP ON THE RIGHT
+      <span class="arrow">→</span>
     </div>
 
-    <div id="err" class="error">Can’t load live bus times.</div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Line</th>
-          <th>Destination</th>
-          <th>ETA</th>
-        </tr>
-      </thead>
-      <tbody id="rows">
-        <tr><td colspan="3" class="muted">Loading…</td></tr>
-      </tbody>
-    </table>
+    <div id="clock" class="clock">--:--</div>
   </div>
 
-  <script>
-    // ===== CONFIG =====
-    const STOPPOINT_ID = "490009140S";
-    const APP_ID = "mmarianholbea";
-    const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
+  <div id="err" class="error">Can’t load live bus times.</div>
 
-    const REFRESH_MS = 5000;     // 5 seconds
-    const MAX_ROWS = 10;
+  <table>
+    <thead>
+      <tr>
+        <th>Line</th>
+        <th>Destination</th>
+        <th>ETA</th>
+      </tr>
+    </thead>
+    <tbody id="rows">
+      <tr><td colspan="3" class="muted">Loading…</td></tr>
+    </tbody>
+  </table>
 
-    // ===== CLOCK =====
-    function setClock(){
-      const d = new Date();
-      const hh = String(d.getHours()).padStart(2,"0");
-      const mm = String(d.getMinutes()).padStart(2,"0");
-      document.getElementById("clock").textContent = `${hh}:${mm}`;
-    }
+</div>
 
-    // ===== UI HELPERS =====
-    function showError(){
-      document.getElementById("err").style.display = "block";
-    }
-    function hideError(){
-      document.getElementById("err").style.display = "none";
-    }
+<script>
+const STOPPOINT_ID = "490009140S";
+const APP_ID = "mmarianholbea";
+const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
 
-    // ===== DATA =====
-    async function loadArrivals(){
-      const url =
-        `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals` +
-        `?app_id=${encodeURIComponent(APP_ID)}&app_key=${encodeURIComponent(APP_KEY)}`;
+const REFRESH_MS = 5000;
+const MAX_ROWS = 10;
 
-      const res = await fetch(url, { cache: "no-store" });
-      if(!res.ok) throw new Error(`TfL API error ${res.status}`);
-      const data = await res.json();
+function setClock(){
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2,'0');
+  const mm = String(d.getMinutes()).padStart(2,'0');
+  document.getElementById("clock").textContent = `${hh}:${mm}`;
+}
 
-      data.sort((a,b) => a.timeToStation - b.timeToStation);
+function showError(){
+  document.getElementById("err").style.display = "block";
+}
 
-      const tbody = document.getElementById("rows");
-      tbody.innerHTML = "";
+function hideError(){
+  document.getElementById("err").style.display = "none";
+}
 
-      if(!data.length){
-        tbody.innerHTML = `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
-        return;
-      }
+async function loadArrivals(){
+  const url =
+    `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals` +
+    `?app_id=${APP_ID}&app_key=${APP_KEY}`;
 
-      data.slice(0, MAX_ROWS).forEach(x => {
-        const mins = Math.max(0, Math.round(x.timeToStation / 60));
-        const etaText = mins === 0 ? "Due" : `${mins} min`;
+  const res = await fetch(url, { cache: "no-store" });
+  if(!res.ok) throw new Error();
 
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="line">${x.lineName || ""}</td>
-          <td class="dest">${x.destinationName || ""}</td>
-          <td class="eta">${etaText}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+  const data = await res.json();
+  data.sort((a,b)=>a.timeToStation-b.timeToStation);
 
-    async function tick(){
-      try{
-        hideError();
-        await loadArrivals();
-      }catch(e){
-        showError();
-      }
-    }
+  const tbody = document.getElementById("rows");
+  tbody.innerHTML = "";
 
-    // Start
-    setClock();
-    setInterval(setClock, 1000);
-    tick();
-    setInterval(tick, REFRESH_MS);
-  </script>
+  if(!data.length){
+    tbody.innerHTML =
+      `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
+    return;
+  }
+
+  data.slice(0,MAX_ROWS).forEach(bus=>{
+    const mins = Math.max(0, Math.round(bus.timeToStation/60));
+    const etaText = mins===0 ? "Due" : `${mins} min`;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td class="line">${bus.lineName}</td>
+      <td class="dest">${bus.destinationName || ""}</td>
+      <td class="eta">${etaText}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function tick(){
+  try{
+    hideError();
+    await loadArrivals();
+  }catch{
+    showError();
+  }
+}
+
+setClock();
+setInterval(setClock,1000);
+
+tick();
+setInterval(tick,REFRESH_MS);
+</script>
+
 </body>
 </html>
