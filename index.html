@@ -20,56 +20,56 @@ body{
 }
 
 .container{
-  padding:60px 80px 60px 70px;
+  padding:55px 80px 60px 70px;
 }
 
 /* ===== HEADER ===== */
-
 .header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:10px;
-}
-
-.left{
-  display:flex;
-  flex-direction:column;
+  display:grid;
+  grid-template-columns: 1fr auto;
+  align-items:start;
+  column-gap:30px;
 }
 
 .title{
   font-size:58px;
   font-weight:900;
-}
-
-.direction{
-  color:var(--red);
-  margin-top:10px;
-}
-
-.direction-text{
-  font-size:40px;
-  font-weight:900;
-  letter-spacing:1px;
-}
-
-.direction-arrow{
-  font-size:200px;   /* MAI MARE */
-  font-weight:900;
-  line-height:0.8;
+  line-height:1.05;
 }
 
 .clock{
   font-size:85px;
   font-weight:900;
+  line-height:1;
+}
+
+/* banner centrat intre titlu si ceas */
+.banner{
+  grid-column: 1 / -1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:26px;
+  margin:22px 0 22px 0;
+  color:var(--red);
+  font-weight:900;
+}
+
+.banner-text{
+  font-size:44px;
+  letter-spacing:1px;
+  white-space:nowrap;
+}
+
+.banner-arrow{
+  font-size:140px; /* mare, dar nu mănâncă vertical */
+  line-height:1;
 }
 
 /* ===== TABLE ===== */
-
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:20px;
 }
 
 thead th{
@@ -120,20 +120,16 @@ tbody td{
 </head>
 
 <body>
-
 <div class="container">
 
   <div class="header">
-    <div class="left">
-      <div class="title">Stop R • Stratford</div>
-
-      <div class="direction">
-        <div class="direction-text">BUS STOP ON THE RIGHT</div>
-        <div class="direction-arrow">→</div>
-      </div>
-    </div>
-
+    <div class="title">Stop R • Stratford</div>
     <div id="clock" class="clock">--:--</div>
+
+    <div class="banner">
+      <div class="banner-text">BUS STOP ON THE RIGHT</div>
+      <div class="banner-arrow">→</div>
+    </div>
   </div>
 
   <table>
@@ -167,8 +163,8 @@ function updateClock(){
 }
 
 function setStatus(text){
-  const tbody = document.getElementById("rows");
-  tbody.innerHTML = `<tr><td class="status" colspan="3">${text}</td></tr>`;
+  document.getElementById("rows").innerHTML =
+    `<tr><td class="status" colspan="3">${text}</td></tr>`;
 }
 
 function etaText(seconds){
@@ -216,6 +212,5 @@ setInterval(updateClock,1000);
 tick();
 setInterval(tick,REFRESH_MS);
 </script>
-
 </body>
 </html>
