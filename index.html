@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Next Buses</title>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#0b0b0b; color:#fff; }
+    .wrap { padding: 40px; }
+    .top { display:flex; align-items:baseline; justify-content:space-between; gap:20px; }
+    .title { font-size: 34px; opacity:.95; }
+    .clock { font-size: 28px; opacity:.75; }
+    .sub { margin-top: 10px; font-size: 22px; opacity:.75; }
+    .table { margin-top: 26px; width:100%; border-collapse: collapse; }
+    .table th, .table td { padding: 14px 10px; border-bottom: 1px solid rgba(255,255,255,.10); }
+    .table th { text-align:left; font-size: 18px; opacity:.7; font-weight: 600; }
+    .line { font-size: 26px; font-weight: 800; width: 90px; }
+    .dest { font-size: 22px; opacity:.95; }
+    .eta { font-size: 26px; font-weight: 800; text-align:right; width: 140px; }
+    .muted { opacity:.65; }
+    .error { margin-top: 18px; font-size: 20px; color:#ffb3b3; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">Leytonstone High Road / Thatched House (Stop R)</div>
+      <div id="clock" class="clock">--:--</div>
+    </div>
+    <div class="sub muted">Live arrivals • refresh every 15s</div>
+
+    <div id="err" class="error" style="display:none;"></div>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Line</th>
+          <th>Destination</th>
+          <th style="text-align:right;">ETA</th>
+        </tr>
+      </thead>
+      <tbody id="rows">
+        <tr><td colspan="3" class="muted">Loading…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const STOPPOINT_ID = "4900072784";
+    const REFRESH_MS = 15000;
+    const MAX_ROWS = 10;
+
+    function setClock() {
+      const d = new Date();
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      document.getElementById("clock").textContent = `${hh}:${mm}`;
+    }
+
+    function showError(msg) {
+      const el = document.getElementById("err");
+      el.style.display = "block";
+      el.textContent = msg;
+    }
+
+    function clearError() {
+      const el = document.getElementById("err");
+      el.style.display = "none";
+      el.textContent = "";
+    }
+
+    async function loadArrivals() {
+      const url = `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals`;
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error(`TfL API error ${res.status}`);
+      let data = await res.json();
+
+      data.sort((a,b) => a.timeToStation - b.timeToStation);
+
+      const tbody = document.getElementById("rows");
+      tbody.innerHTML = "";
+
+      if (!data.length) {
+        tbody.innerHTML = `<tr><td colspan="3" class="muted">No live arrivals right now</td></tr>`;
+        return;
+      }
+
+      data.slice(0, MAX_ROWS).forEach(x => {
+        const mins = Math.max(0, Math.round(x.timeToStation / 60));
+        const etaText = mins === 0 ? "Due" : `${mins} min`;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="line">${x.lineName}</td>
+          <td class="dest">${x.destinationName || ""}</td>
+          <td class="eta">${etaText}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function tick() {
+      try {
+        clearError();
+        await loadArrivals();
+      } catch (e) {
+        showError("Can’t load live bus times.");
+      }
+    }
+
+    setClock();
+    setInterval(setClock, 10000);
+
+    tick();
+    setInterval(tick, REFRESH_MS);
+  </script>
+</body>
+</html>
