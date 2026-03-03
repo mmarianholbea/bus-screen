@@ -20,31 +20,29 @@ body{
 }
 
 .wrap{
-  padding:40px 60px 30px;
+  padding:28px 50px 24px;
 }
 
-/* ===== TOP LINE ===== */
-
-.topline{
+/* ===== HEADER ===== */
+.header{
   display:grid;
   grid-template-columns:auto 1fr auto;
-  align-items:start;
-  margin-bottom:20px;
+  align-items:center;
+  column-gap:24px;
 }
 
 .stop{
   font-size:68px;
   font-weight:900;
   white-space:nowrap;
+  line-height:1;
 }
 
-/* CENTER BLOCK */
-.centerblock{
-  justify-self:center;
-  text-align:center;
+.center{
   display:flex;
   flex-direction:column;
   align-items:center;
+  justify-content:center;
 }
 
 .centertext{
@@ -54,41 +52,39 @@ body{
   line-height:1;
 }
 
-/* BIG THICK ARROW */
 .bigarrow{
-  margin-top:12px;
-  font-size:120px;          /* MUCH BIGGER */
+  margin-top:6px;
+  font-size:120px;
   font-weight:900;
   color:var(--red);
   line-height:1;
   animation:nudge 1s ease-in-out infinite;
 }
 
-/* Animation */
 @keyframes nudge{
   0%,100%{ transform: translateX(0); }
-  50%{ transform: translateX(25px); }
+  50%{ transform: translateX(28px); }
 }
 
 .clock{
   font-size:78px;
   font-weight:900;
-  text-align:right;
   white-space:nowrap;
+  line-height:1;
 }
 
 /* ===== TABLE ===== */
-
 table{
   width:100%;
   border-collapse:collapse;
+  margin-top:18px;
 }
 
 thead th{
   text-align:left;
   font-size:34px;
   font-weight:900;
-  padding:18px 0 14px;
+  padding:16px 0 12px;
   border-bottom:4px solid #000;
 }
 
@@ -143,17 +139,15 @@ tbody td{
 <body>
 <div class="wrap">
 
-  <div class="topline">
-
+  <div class="header">
     <div class="stop">Stop R • Stratford</div>
 
-    <div class="centerblock">
-      <div class="centertext">BUS STOP ON THE RIGHT</div>
+    <div class="center">
+      <div class="centertext">BUS STOP</div>
       <div class="bigarrow">→</div>
     </div>
 
     <div id="clock" class="clock">--:--</div>
-
   </div>
 
   <div id="err" class="error">Can’t load live bus times.</div>
@@ -188,13 +182,8 @@ function setClock(){
   document.getElementById("clock").textContent = `${hh}:${mm}`;
 }
 
-function showError(){
-  document.getElementById("err").style.display = "block";
-}
-
-function hideError(){
-  document.getElementById("err").style.display = "none";
-}
+function showError(){ document.getElementById("err").style.display = "block"; }
+function hideError(){ document.getElementById("err").style.display = "none"; }
 
 async function loadArrivals(){
   const url =
@@ -231,12 +220,8 @@ async function loadArrivals(){
 }
 
 async function tick(){
-  try{
-    hideError();
-    await loadArrivals();
-  }catch{
-    showError();
-  }
+  try{ hideError(); await loadArrivals(); }
+  catch{ showError(); }
 }
 
 setClock();
