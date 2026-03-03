@@ -28,11 +28,12 @@ html,body{
   height:100%;
 }
 
-/* HEADER PERFECT ALIGN */
-.header{
+/* ===== HEADER ===== */
+
+.header-top{
   display:grid;
-  grid-template-columns: auto 1fr auto;
-  align-items:center;  /* THIS fixes vertical alignment */
+  grid-template-columns:auto 1fr auto;
+  align-items:center; /* perfect alignment */
 }
 
 .stop{
@@ -41,18 +42,28 @@ html,body{
   white-space:nowrap;
 }
 
-.center{
-  text-align:center;
-}
-
 .centertext{
   font-size:60px;
   font-weight:900;
   color:var(--red);
+  text-align:center;
+}
+
+.clock{
+  font-size:70px;
+  font-weight:900;
+  white-space:nowrap;
+  text-align:right;
+}
+
+/* ARROW ROW */
+.header-bottom{
+  display:flex;
+  justify-content:center;
+  margin-top:10px;
 }
 
 .arrow{
-  margin-top:10px;
   animation:nudge 1s ease-in-out infinite;
 }
 
@@ -76,11 +87,7 @@ html,body{
   50%{ transform: translateX(30px); }
 }
 
-.clock{
-  font-size:70px;
-  font-weight:900;
-  white-space:nowrap;
-}
+/* ===== TABLE ===== */
 
 table{
   width:100%;
@@ -131,20 +138,21 @@ tbody td{
 <body>
 <div class="safe">
 
-  <div class="header">
+  <!-- HEADER LINE 1 -->
+  <div class="header-top">
     <div class="stop">Stop R • Stratford</div>
-
-    <div class="center">
-      <div class="centertext">BUS STOP</div>
-      <div class="arrow">
-        <svg viewBox="0 0 300 100">
-          <line x1="10" y1="50" x2="200" y2="50"/>
-          <polygon points="200,15 290,50 200,85"/>
-        </svg>
-      </div>
-    </div>
-
+    <div class="centertext">BUS STOP</div>
     <div id="clock" class="clock">--:--</div>
+  </div>
+
+  <!-- HEADER LINE 2 (arrow only) -->
+  <div class="header-bottom">
+    <div class="arrow">
+      <svg viewBox="0 0 300 100">
+        <line x1="10" y1="50" x2="200" y2="50"/>
+        <polygon points="200,15 290,50 200,85"/>
+      </svg>
+    </div>
   </div>
 
   <table>
