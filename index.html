@@ -20,58 +20,38 @@ body{
 }
 
 .container{
-  padding:70px 80px;
+  padding:55px 90px 55px 70px; /* mai mult spațiu în dreapta pt săgeată */
 }
 
 .header{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
-}
-
-.left-header{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  align-items:baseline;
+  gap:30px;
+  margin-bottom:28px;
 }
 
 .title{
-  font-size:60px;
+  font-size:58px;
   font-weight:900;
+  white-space:nowrap;
 }
 
 .clock{
-  font-size:70px;
+  font-size:78px;
   font-weight:900;
-}
-
-.arrow-box{
-  text-align:right;
-}
-
-.arrow-label{
-  font-size:34px;
-  font-weight:800;
-  margin-bottom:5px;
-}
-
-.arrow{
-  font-size:150px;   /* săgeată mare */
-  font-weight:900;
-  line-height:1;
 }
 
 table{
   width:100%;
   border-collapse:collapse;
-  margin-top:50px;
 }
 
 thead th{
   text-align:left;
-  font-size:34px;
+  font-size:32px;
   font-weight:800;
-  padding-bottom:18px;
+  padding:0 0 14px 0;
   border-bottom:5px solid var(--black);
 }
 
@@ -80,24 +60,25 @@ thead th:last-child{
 }
 
 tbody td{
-  padding:32px 0;
+  padding:30px 0;
   border-bottom:2px solid var(--gray);
+  vertical-align:middle;
   color:var(--red);
 }
 
 .line{
-  font-size:80px;
+  font-size:76px;
   font-weight:900;
   width:200px;
 }
 
 .destination{
-  font-size:60px;
+  font-size:58px;
   font-weight:800;
 }
 
 .eta{
-  font-size:60px;
+  font-size:58px;
   font-weight:900;
   text-align:right;
   white-space:nowrap;
@@ -105,27 +86,40 @@ tbody td{
 }
 
 .status{
-  font-size:46px;
+  font-size:44px;
   font-weight:800;
   color:var(--red);
-  padding:40px 0;
+  padding:30px 0;
+}
+
+/* SĂGEATA: fix pe dreapta, pe centru, NU ocupă header */
+.arrow-fixed{
+  position:fixed;
+  right:18px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:140px;
+  font-weight:900;
+  color:var(--black);
+  line-height:1;
+  opacity:0.95;
+  pointer-events:none;
+}
+
+/* mic “shadow” ca să fie vizibilă pe orice */
+.arrow-fixed::after{
+  content:"";
 }
 </style>
 </head>
 
 <body>
+<div class="arrow-fixed">→</div>
+
 <div class="container">
-
   <div class="header">
-    <div class="left-header">
-      <div class="title">Stop R • Stratford</div>
-      <div id="clock" class="clock">--:--</div>
-    </div>
-
-    <div class="arrow-box">
-      <div class="arrow-label">Buses</div>
-      <div class="arrow">→</div>
-    </div>
+    <div class="title">Stop R • Stratford</div>
+    <div id="clock" class="clock">--:--</div>
   </div>
 
   <table>
@@ -140,21 +134,21 @@ tbody td{
       <tr><td class="status" colspan="3">Loading…</td></tr>
     </tbody>
   </table>
-
 </div>
 
 <script>
 const STOPPOINT_ID = "490009140S";
 const APP_ID = "mmarianholbea";
 const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
+
 const REFRESH_MS = 5000;
-const MAX_ROWS = 8;
+const MAX_ROWS = 10;
 
 function updateClock(){
   const d = new Date();
   const h = String(d.getHours()).padStart(2,'0');
   const m = String(d.getMinutes()).padStart(2,'0');
-  document.getElementById("clock").textContent = h + ":" + m;
+  document.getElementById("clock").textContent = `${h}:${m}`;
 }
 
 function setStatus(text){
@@ -164,14 +158,13 @@ function setStatus(text){
 
 function etaText(seconds){
   const mins = Math.max(0, Math.round(seconds / 60));
-  return mins === 0 ? "Due" : mins + " min";
+  return mins === 0 ? "Due" : `${mins} min`;
 }
 
 async function loadBuses(){
   const url = `https://api.tfl.gov.uk/StopPoint/${STOPPOINT_ID}/Arrivals?app_id=${APP_ID}&app_key=${APP_KEY}`;
-
   const res = await fetch(url, { cache: "no-store" });
-  if(!res.ok) throw new Error();
+  if(!res.ok) throw new Error("TfL " + res.status);
 
   const data = await res.json();
   data.sort((a,b)=>a.timeToStation-b.timeToStation);
@@ -184,7 +177,7 @@ async function loadBuses(){
     return;
   }
 
-  data.slice(0,MAX_ROWS).forEach(bus=>{
+  data.slice(0, MAX_ROWS).forEach(bus=>{
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td class="line">${bus.lineName}</td>
@@ -204,10 +197,9 @@ async function tick(){
 }
 
 updateClock();
-setInterval(updateClock,1000);
+setInterval(updateClock, 1000);
 tick();
-setInterval(tick,REFRESH_MS);
+setInterval(tick, REFRESH_MS);
 </script>
-
 </body>
 </html>
