@@ -1,252 +1,366 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bus Times</title>
-  <style>
-    :root{
-      --red:#d40000;
-      --black:#000;
-      --grid:#e7e7e7;
-    }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Bus Times</title>
 
-    html,body{
-      margin:0;
-      padding:0;
-      width:100%;
-      height:100%;
-      background:#fff;
-      font-family: Arial, Helvetica, sans-serif;
-      color:var(--black);
-    }
+<style>
+:root{
+  --red:#d40000;
+  --black:#000;
+  --grid:#e7e7e7;
+  --dueYellow:#ffe100;
+}
 
-    /* safe padding for TV overscan */
-    .wrap{
-      box-sizing:border-box;
-      height:100%;
-      padding:32px 72px 24px;
-    }
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  font-family:Arial, Helvetica, sans-serif;
+  color:var(--black);
 
-    /* ===== HEADER ===== */
-    .header{
-      display:grid;
-      grid-template-columns: auto 1fr auto;
-      align-items: center;
-      column-gap: 24px;
-    }
+  background:
+    linear-gradient(rgba(255,255,255,0.85), rgba(255,255,255,0.85)),
+    url("https://raw.githubusercontent.com/mmarianholbea/bus-screen/main/WhatsApp%20Image%202026-03-04%20at%2014.11.44.jpeg");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
 
-    .stop{
-      font-size: 56px;
-      font-weight: 900;
-      line-height: 1;
-      white-space: nowrap;
-    }
+.wrap{
+  box-sizing:border-box;
+  height:100%;
+  padding:32px 72px 24px;
+}
 
-    .mid{
-      text-align:center;
-      min-width: 0;
-    }
+/* HEADER */
+.header{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  grid-template-rows:auto auto;
+  column-gap:24px;
+  align-items:start;
+}
 
-    .mid .busstop{
-      font-size: 56px;
-      font-weight: 900;
-      color: var(--red);
-      line-height: 1;
-      white-space: nowrap;
-      display:inline-block;
-    }
+/* STOP */
+.stop{
+  grid-column:1;
+  grid-row:1;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  font-size:56px;
+  font-weight:900;
+}
+.stopCircle{
+  width:60px;
+  height:60px;
+  background:#d40000;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:36px;
+  font-weight:900;
+}
+.stopLabel,
+.stopCity{
+  font-size:56px;
+  font-weight:900;
+}
 
-    .clock{
-      font-size: 64px;
-      font-weight: 900;
-      line-height: 1;
-      white-space: nowrap;
-    }
+/* BUS STOP */
+.mid{ grid-column:2; grid-row:1; text-align:center; }
+.busstop{
+  font-size:56px;
+  font-weight:900;
+  color:var(--red);
+}
 
-    .arrowRow{
-      display:grid;
-      grid-template-columns: auto 1fr auto;
-      margin-top: 6px; /* tight */
-    }
-    .arrowRow .arrowBox{
-      grid-column: 2;
-      justify-self: center;
-    }
+/* CLOCK */
+.clock{
+  grid-column:3;
+  grid-row:1;
+  font-size:64px;
+  font-weight:900;
+}
 
-    .arrow{
-      display:inline-block;
-      animation: nudge 1s ease-in-out infinite;
-    }
-    @keyframes nudge{
-      0%,100%{ transform: translateX(0); }
-      50%{ transform: translateX(22px); }
-    }
+/* INDICATOR ROW */
+.indicatorRow{
+  grid-column:2;
+  grid-row:2;
+  display:flex;
+  justify-content:center;
+  margin-top:8px;
+}
 
-    .arrow svg{
-      width: 260px;
-      height: 64px;
-      display:block;
-    }
-    .arrow line{
-      stroke: var(--red);
-      stroke-width: 20;
-      stroke-linecap: round;
-    }
-    .arrow polygon{
-      fill: var(--red);
-    }
+/* track */
+.track{
+  width:280px;
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+}
 
-    /* ===== TABLE ===== */
-    table{
-      width:100%;
-      border-collapse: collapse;
-      margin-top: 10px; /* brings black line higher */
-      table-layout: fixed; /* important for stable columns */
-    }
+/* walker moves to the right (loop) */
+.walkerWrap{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  will-change: transform;
+  animation: walkLoop 2.8s linear infinite;
+}
 
-    thead th{
-      font-size: 24px;
-      font-weight: 900;
-      padding: 6px 0 8px;
-      border-bottom: 4px solid #000;
-      text-align: left;
-    }
+@keyframes walkLoop{
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(160px); }
+}
 
-    thead th:nth-child(1){ width: 160px; }
-    thead th:nth-child(2){ width: auto; }
-    thead th:nth-child(3){
-      width: 300px;         /* BIG fixed ETA column so it won't wrap */
-      text-align: right;
-    }
+/* ✅ Dance while walking: tiny sway + rotate (clean) */
+.dance{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation: danceSway 0.65s ease-in-out infinite;
+  transform-origin: 50% 70%;
+}
 
-    tbody td{
-      padding: 18px 0;      /* tighter -> more rows */
-      border-bottom: 2px solid var(--grid);
-      vertical-align: middle;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+@keyframes danceSway{
+  0%,100%{ transform: rotate(-4deg) translateY(0); }
+  50%    { transform: rotate(4deg) translateY(-2px); }
+}
 
-    td.line{
-      font-size: 74px;
-      font-weight: 900;
-      color: var(--red);
-      white-space: nowrap;
-    }
+/* walker */
+.walker svg{
+  width:52px;
+  height:52px;
+  overflow:visible;
+}
 
-    td.dest{
-      font-size: 64px;
-      font-weight: 900;
-      color: var(--red);
-      white-space: nowrap;
-    }
+.walker .head{ fill:var(--red); }
 
-    td.eta{
-      font-size: 74px;
-      font-weight: 900;
-      color: var(--red);
-      text-align: right;
-      white-space: nowrap;  /* CRITICAL: prevents "min" going under */
-      letter-spacing: 0.5px;
-    }
+.walker .body,
+.walker .arm,
+.walker .leg{
+  stroke:var(--red);
+  stroke-width:8;
+  stroke-linecap:round;
+  transform-box: fill-box;
+  transform-origin: center;
+}
 
-    /* remove any accidental line breaks from TV browsers */
-    .noWrap{
-      white-space: nowrap;
-      display: inline-block;
-    }
-  </style>
+/* walking swing (subtle) */
+.walker .arm.left{  animation: swingArmL 0.45s linear infinite; transform-origin: 58% 42%; }
+.walker .arm.right{ animation: swingArmR 0.45s linear infinite; transform-origin: 42% 42%; }
+.walker .leg.left{  animation: swingLegL 0.45s linear infinite; transform-origin: 56% 60%; }
+.walker .leg.right{ animation: swingLegR 0.45s linear infinite; transform-origin: 44% 60%; }
+
+@keyframes swingArmL{ 0%,100%{ transform: rotate(8deg);} 50%{ transform: rotate(-8deg);} }
+@keyframes swingArmR{ 0%,100%{ transform: rotate(-8deg);} 50%{ transform: rotate(8deg);} }
+@keyframes swingLegL{ 0%,100%{ transform: rotate(-7deg);} 50%{ transform: rotate(7deg);} }
+@keyframes swingLegR{ 0%,100%{ transform: rotate(7deg);} 50%{ transform: rotate(-7deg);} }
+
+/* Arrow stays clean */
+.arrow svg{ width:120px; height:60px; }
+.arrow line{
+  stroke:var(--red);
+  stroke-width:16;
+  stroke-linecap:round;
+}
+.arrow polygon{ fill:var(--red); }
+
+/* TABLE */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  table-layout:fixed;
+}
+
+thead th{
+  font-size:40px;
+  font-weight:900;
+  padding:10px 0 12px;
+  border-bottom:4px solid #000;
+  text-align:left;
+}
+thead th:nth-child(1){ width:160px; }
+thead th:nth-child(2){ width:auto; }
+thead th:nth-child(3){
+  width:300px;
+  text-align:right;
+}
+
+tbody td{
+  padding:18px 0;
+  border-bottom:2px solid var(--grid);
+  vertical-align:middle;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  background: transparent;
+}
+
+td.line{
+  font-size:74px;
+  font-weight:900;
+  color:var(--red);
+  white-space:nowrap;
+}
+td.dest{
+  font-size:64px;
+  font-weight:900;
+  color:var(--red);
+  white-space:nowrap;
+}
+td.eta{
+  font-size:74px;
+  font-weight:900;
+  color:var(--red);
+  text-align:right;
+  white-space:nowrap;
+}
+
+.noWrap{ white-space:nowrap; display:inline-block; }
+
+/* DUE highlight */
+tbody tr.dueRow td{
+  background: rgba(255,225,0,0.45);
+}
+tbody tr.dueRow td.eta{ color:#000; }
+
+/* Heartbeat pulse on FIRST ROW TEXT */
+.pulseText{
+  display:inline-block;
+  transform-origin:center;
+  animation: heartbeat 1.05s infinite;
+}
+@keyframes heartbeat{
+  0%   { transform: scale(1); }
+  12%  { transform: scale(1.06); }
+  22%  { transform: scale(1); }
+  32%  { transform: scale(1.10); }
+  42%  { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+</style>
 </head>
+
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <div class="header">
-      <div class="stop">Stop R • Stratford</div>
-
-      <div class="mid">
-        <div class="busstop">BUS STOP</div>
-      </div>
-
-      <div id="clock" class="clock">--:--</div>
+  <div class="header">
+    <div class="stop">
+      <div class="stopLabel">STOP</div>
+      <div class="stopCircle">R</div>
+      <div class="stopCity">• Stratford</div>
     </div>
 
-    <div class="arrowRow">
-      <div class="arrowBox">
-        <div class="arrow" aria-hidden="true">
-          <svg viewBox="0 0 320 100">
-            <line x1="10" y1="50" x2="220" y2="50"></line>
-            <polygon points="220,12 310,50 220,88"></polygon>
-          </svg>
+    <div class="mid">
+      <div class="busstop">BUS STOP</div>
+    </div>
+
+    <div id="clock" class="clock">--:--</div>
+
+    <div class="indicatorRow" aria-hidden="true">
+      <div class="track">
+        <div class="walkerWrap">
+          <div class="dance">
+            <div class="walker">
+              <svg viewBox="0 0 100 100">
+                <circle class="head" cx="50" cy="18" r="10"></circle>
+                <line class="body" x1="50" y1="30" x2="50" y2="60"></line>
+                <line class="arm left"  x1="50" y1="40" x2="28" y2="52"></line>
+                <line class="arm right" x1="50" y1="40" x2="72" y2="52"></line>
+                <line class="leg left"  x1="50" y1="60" x2="34" y2="88"></line>
+                <line class="leg right" x1="50" y1="60" x2="66" y2="88"></line>
+              </svg>
+            </div>
+          </div>
+
+          <div class="arrow">
+            <svg viewBox="0 0 200 80">
+              <line x1="10" y1="40" x2="130" y2="40"></line>
+              <polygon points="130,10 190,40 130,70"></polygon>
+            </svg>
+          </div>
         </div>
       </div>
     </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Line</th>
-          <th>Destination</th>
-          <th>ETA</th>
-        </tr>
-      </thead>
-      <tbody id="rows">
-        <tr><td colspan="3">Loading…</td></tr>
-      </tbody>
-    </table>
-
   </div>
 
-  <script>
-    const STOPPOINT_ID = "490009140S";
-    const APP_ID = "mmarianholbea";
-    const APP_KEY = "2ed7f93cc9bf4afeba5a399e39497c78";
+  <table>
+    <thead>
+      <tr>
+        <th>Line</th>
+        <th>Destination</th>
+        <th>ETA</th>
+      </tr>
+    </thead>
+    <tbody id="rows">
+      <tr><td colspan="3">Loading…</td></tr>
+    </tbody>
+  </table>
 
-    const REFRESH_MS = 5000;
-    const MAX_ROWS = 12;
+</div>
 
-    function setClock() {
-      const d = new Date();
-      const hh = String(d.getHours()).padStart(2,'0');
-      const mm = String(d.getMinutes()).padStart(2,'0');
-      document.getElementById("clock").textContent = `${hh}:${mm}`;
-    }
+<script>
+const STOPPOINT_ID="490009140S";
+const APP_ID="mmarianholbea";
+const APP_KEY="2ed7f93cc9bf4afeba5a399e39497c78";
 
-    async function loadArrivals() {
-      const url = `https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals?app_id=${encodeURIComponent(APP_ID)}&app_key=${encodeURIComponent(APP_KEY)}`;
-      const res = await fetch(url, { cache: "no-store" });
-      if (!res.ok) throw new Error("TfL API error " + res.status);
-      const data = await res.json();
+const REFRESH_MS=5000;
+const MAX_ROWS=12;
 
-      data.sort((a,b) => a.timeToStation - b.timeToStation);
+function setClock(){
+  const d=new Date();
+  const hh=String(d.getHours()).padStart(2,'0');
+  const mm=String(d.getMinutes()).padStart(2,'0');
+  document.getElementById("clock").textContent=`${hh}:${mm}`;
+}
 
-      const tbody = document.getElementById("rows");
-      tbody.innerHTML = "";
+async function loadArrivals(){
+  const url=`https://api.tfl.gov.uk/StopPoint/${encodeURIComponent(STOPPOINT_ID)}/Arrivals?app_id=${encodeURIComponent(APP_ID)}&app_key=${encodeURIComponent(APP_KEY)}`;
+  const res=await fetch(url,{cache:"no-store"});
+  const data=await res.json();
 
-      if (!data.length) {
-        tbody.innerHTML = `<tr><td colspan="3">No live arrivals</td></tr>`;
-        return;
-      }
+  data.sort((a,b)=>a.timeToStation-b.timeToStation);
 
-      data.slice(0, MAX_ROWS).forEach(x => {
-        const mins = Math.max(0, Math.round(x.timeToStation / 60));
-        const etaText = mins === 0 ? "Due" : `${mins} min`;
+  const tbody=document.getElementById("rows");
+  tbody.innerHTML="";
 
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="line">${x.lineName}</td>
-          <td class="dest">${x.destinationName || ""}</td>
-          <td class="eta"><span class="noWrap">${etaText}</span></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
+  if(!data.length){
+    tbody.innerHTML=`<tr><td colspan="3">No live arrivals</td></tr>`;
+    return;
+  }
 
-    setClock();
-    setInterval(setClock, 1000);
+  data.slice(0,MAX_ROWS).forEach((x, idx) => {
+    const mins=Math.max(0, Math.round(x.timeToStation/60));
+    const isDue = mins === 0;
+    const etaText = isDue ? "Due" : `${mins} min`;
 
-    loadArrivals();
-    setInterval(loadArrivals, REFRESH_MS);
-  </script>
+    const tr=document.createElement("tr");
+    if (isDue) tr.classList.add("dueRow");
+
+    const pulseClass = (idx === 0) ? "pulseText" : "";
+
+    tr.innerHTML=`
+      <td class="line"><span class="${pulseClass}">${x.lineName}</span></td>
+      <td class="dest"><span class="${pulseClass}">${x.destinationName || ""}</span></td>
+      <td class="eta"><span class="noWrap ${pulseClass}">${etaText}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+setClock();
+setInterval(setClock,1000);
+
+loadArrivals();
+setInterval(loadArrivals,REFRESH_MS);
+</script>
+
 </body>
 </html>
